@@ -19,11 +19,15 @@ public class Main {
     public static void showMainMenu() {
         //Menüoptionen
         final int MENU_MAKLER = 0;
-        final int QUIT = 1;
+        final int MENU_ESTATE = 1;
+        final int MENU_CONTRACT = 2;
+        final int QUIT = 3;
 
         //Erzeuge Menü
         Menu mainMenu = new Menu("Hauptmenü");
         mainMenu.addEntry("Makler-Verwaltung", MENU_MAKLER);
+        mainMenu.addEntry("Wohnobjekt-Verwaltung", MENU_ESTATE);
+        mainMenu.addEntry("Vertrags-Verwaltung", MENU_CONTRACT);
         mainMenu.addEntry("Beenden", QUIT);
 
         //Verarbeite Eingabe
@@ -34,6 +38,12 @@ public class Main {
                 case MENU_MAKLER:
                     showMaklerMenu();
                     break;
+                case MENU_ESTATE:
+                    showEstateMenu();
+                    break;
+                case MENU_CONTRACT:
+                    showContractMenu();
+                    break;
                 case QUIT:
                     return;
             }
@@ -41,16 +51,20 @@ public class Main {
     }
 
     /**
-     * Zeigt die Maklerverwaltung
+     * Zeigt die Makler-Verwaltung
      */
     public static void showMaklerMenu() {
         //Menüoptionen
         final int NEW_MAKLER = 0;
-        final int BACK = 1;
+        final int EDIT_MAKLER = 1;
+        final int DELETE_MAKLER = 2;
+        final int BACK = 3;
 
         //Maklerverwaltungsmenü
         Menu maklerMenu = new Menu("Makler-Verwaltung");
         maklerMenu.addEntry("Neuer Makler", NEW_MAKLER);
+        maklerMenu.addEntry("Bearbeite Makler", EDIT_MAKLER);
+        maklerMenu.addEntry("Entferne Makler", DELETE_MAKLER);
         maklerMenu.addEntry("Zurück zum Hauptmenü", BACK);
 
         //Verarbeite Eingabe
@@ -60,6 +74,12 @@ public class Main {
             switch (response) {
                 case NEW_MAKLER:
                     newMakler();
+                    break;
+                case EDIT_MAKLER:
+                	// noch nix
+                    break;
+                case DELETE_MAKLER:
+                	// noch nix
                     break;
                 case BACK:
                     return;
@@ -81,5 +101,84 @@ public class Main {
         m.save();
 
         System.out.println("Makler mit der Login " + m.getLogin() + " wurde erzeugt.");
+    }
+    
+    /**
+     * Zeigt die Wohnobjekt-Werwaltung
+     */
+    public static void showEstateMenu() {
+        //Menüoptionen
+        final int LOGIN = 0;
+        final int NEW_ESTATE = 1;
+        final int EDIT_ESTATE = 2;
+        final int DELETE_ESTATE = 3;
+        final int BACK = 4;
+
+        //Maklerverwaltungsmenü
+        Menu maklerMenu = new Menu("Makler-Verwaltung");
+        maklerMenu.addEntry("Login", LOGIN);
+        maklerMenu.addEntry("Neues Wohnobjekt", NEW_ESTATE);
+        maklerMenu.addEntry("Bearbeite Wohnobjekt", EDIT_ESTATE);
+        maklerMenu.addEntry("Entferne Wohnobjekt", DELETE_ESTATE);
+        maklerMenu.addEntry("Zurück zum Hauptmenü", BACK);
+
+        //Verarbeite Eingabe
+        while (true) {
+            int response = maklerMenu.show();
+
+            switch (response) {
+            	case LOGIN:
+            		// noch nix
+            		break;
+            	case NEW_ESTATE:
+            		// noch nix
+            		break;
+            	case EDIT_ESTATE:
+            		// noch nix
+            		break;
+            	case DELETE_ESTATE:
+            		// noch nix
+            		break;
+                case BACK:
+                    return;
+            }
+        }
+    }
+    
+    /**
+     * Zeigt die Vertrags-Werwaltung
+     */
+    public static void showContractMenu() {
+        //Menüoptionen
+        final int NEW_PERSON = 0;
+        final int NEW_CONTRACT = 1;
+        final int SHOW_CONTRACTS = 2;
+        final int BACK = 4;
+
+        //Maklerverwaltungsmenü
+        Menu maklerMenu = new Menu("Makler-Verwaltung");
+        maklerMenu.addEntry("Erstelle Person", NEW_PERSON);
+        maklerMenu.addEntry("Erstelle Vertrag", NEW_CONTRACT);
+        maklerMenu.addEntry("Zeige Verträge", SHOW_CONTRACTS);
+        maklerMenu.addEntry("Zurück zum Hauptmenü", BACK);
+
+        //Verarbeite Eingabe
+        while (true) {
+            int response = maklerMenu.show();
+
+            switch (response) {
+        	case NEW_PERSON:
+        		// noch nix
+        		break;
+        	case NEW_CONTRACT:
+        		// noch nix
+        		break;
+        	case SHOW_CONTRACTS:
+        		// noch nix
+        		break;
+            case BACK:
+                return;
+        }
+        }
     }
 }
