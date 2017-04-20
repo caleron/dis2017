@@ -140,4 +140,40 @@ public class EstateAgent {
             e.printStackTrace();
         }
     }
+    public void delete() {
+        // Hole Verbindung
+        Connection con = DB2ConnectionManager.getInstance().getConnection();
+
+        try {
+            // SQL-Befehl zum entfernen des Maklers
+            String updateSQL = "DELETE FROM ESTATE_AGENT WHERE LOGIN = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateSQL);
+
+            // Setze Anfrage Parameter
+            pstmt.setString(1, getLogin());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void edit() {
+        // Hole Verbindung
+        Connection con = DB2ConnectionManager.getInstance().getConnection();
+
+        try {
+            // SQL-Befehl zum entfernen des Maklers
+            String updateSQL = "UPDATE ESTATE_AGENT SET name = ?, address = ?, password = ? WHERE LOGIN = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateSQL);
+
+            // Setze Anfrage Parameter
+            pstmt.setString(1, getName());
+            pstmt.setString(2, getAddress());
+            pstmt.setString(3, getPassword());
+            pstmt.setString(4, getLogin());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

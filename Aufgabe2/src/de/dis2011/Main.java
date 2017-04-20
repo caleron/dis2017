@@ -76,10 +76,10 @@ public class Main {
                     newMakler();
                     break;
                 case EDIT_MAKLER:
-                	// noch nix
+                	editMakler();
                     break;
                 case DELETE_MAKLER:
-                	// noch nix
+                	deleteMakler();
                     break;
                 case BACK:
                     return;
@@ -100,7 +100,34 @@ public class Main {
         m.setPassword(FormUtil.readString("Passwort"));
         m.save();
 
-        System.out.println("Makler mit der Login " + m.getLogin() + " wurde erzeugt.");
+        System.out.println("Makler mit dem Login " + m.getLogin() + " wurde erzeugt.");
+    }
+    
+    /**
+     * Bearbeitet einen Makler anhand des Logins
+     */
+    public static void editMakler() {
+        EstateAgent m = new EstateAgent(true);
+        
+        m.setLogin(FormUtil.readString("Login"));
+        m.setName(FormUtil.readString("Name"));
+        m.setAddress(FormUtil.readString("Adresse"));
+        m.setPassword(FormUtil.readString("Passwort"));
+        m.edit();
+
+        System.out.println("Makler mit dem Login " + m.getLogin() + " wurde bearbeitet.");
+    }
+    
+    /**
+     * Löscht einen Makler anhand des Logins
+     */
+    public static void deleteMakler() {
+        EstateAgent m = new EstateAgent(false);
+
+        m.setLogin(FormUtil.readString("Login"));
+        m.delete();
+
+        System.out.println("Makler mit der Login " + m.getLogin() + " wurde gelöscht.");
     }
     
     /**
