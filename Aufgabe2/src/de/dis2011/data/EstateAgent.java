@@ -21,6 +21,10 @@ public class EstateAgent {
         this.isInDb = isInDb;
     }
 
+    public void setInDb(boolean inDb) {
+        isInDb = inDb;
+    }
+
     public EstateAgent(String name, String address, String login, String password, boolean isInDb) {
         this.name = name;
         this.address = address;
@@ -140,6 +144,7 @@ public class EstateAgent {
             e.printStackTrace();
         }
     }
+
     public void delete() {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
@@ -156,8 +161,8 @@ public class EstateAgent {
             e.printStackTrace();
         }
     }
-    
-    public void edit() {
+
+    public boolean edit() {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
 
@@ -171,9 +176,12 @@ public class EstateAgent {
             pstmt.setString(2, getAddress());
             pstmt.setString(3, getPassword());
             pstmt.setString(4, getLogin());
-            pstmt.executeUpdate();
+
+            //false zurückgeben, falls keine zeile bearbeitet wurde --> falscher login
+            return pstmt.executeUpdate() != 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 }

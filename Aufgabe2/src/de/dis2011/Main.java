@@ -76,10 +76,10 @@ public class Main {
                     newMakler();
                     break;
                 case EDIT_MAKLER:
-                	editMakler();
+                    editMakler();
                     break;
                 case DELETE_MAKLER:
-                	deleteMakler();
+                    deleteMakler();
                     break;
                 case BACK:
                     return;
@@ -102,22 +102,28 @@ public class Main {
 
         System.out.println("Makler mit dem Login " + m.getLogin() + " wurde erzeugt.");
     }
-    
+
     /**
      * Bearbeitet einen Makler anhand des Logins
      */
     public static void editMakler() {
         EstateAgent m = new EstateAgent(true);
-        
+
         m.setLogin(FormUtil.readString("Login"));
         m.setName(FormUtil.readString("Name"));
         m.setAddress(FormUtil.readString("Adresse"));
         m.setPassword(FormUtil.readString("Passwort"));
-        m.edit();
 
-        System.out.println("Makler mit dem Login " + m.getLogin() + " wurde bearbeitet.");
+        if (m.edit()) {
+            System.out.println("Makler mit dem Login " + m.getLogin() + " wurde bearbeitet.");
+        } else {
+            //falls makler nicht in der Datenbank, wird ein neuer erstellt
+            m.setInDb(false);
+            m.save();
+            System.out.println("Makler mit dem Login " + m.getLogin() + " nicht gefunden, stattdessen neuer erstellt.");
+        }
     }
-    
+
     /**
      * Löscht einen Makler anhand des Logins
      */
@@ -129,7 +135,7 @@ public class Main {
 
         System.out.println("Makler mit der Login " + m.getLogin() + " wurde gelöscht.");
     }
-    
+
     /**
      * Zeigt die Wohnobjekt-Werwaltung
      */
@@ -154,24 +160,24 @@ public class Main {
             int response = maklerMenu.show();
 
             switch (response) {
-            	case LOGIN:
-            		// noch nix
-            		break;
-            	case NEW_ESTATE:
-            		// noch nix
-            		break;
-            	case EDIT_ESTATE:
-            		// noch nix
-            		break;
-            	case DELETE_ESTATE:
-            		// noch nix
-            		break;
+                case LOGIN:
+                    // noch nix
+                    break;
+                case NEW_ESTATE:
+                    // noch nix
+                    break;
+                case EDIT_ESTATE:
+                    // noch nix
+                    break;
+                case DELETE_ESTATE:
+                    // noch nix
+                    break;
                 case BACK:
                     return;
             }
         }
     }
-    
+
     /**
      * Zeigt die Vertrags-Werwaltung
      */
@@ -194,18 +200,18 @@ public class Main {
             int response = maklerMenu.show();
 
             switch (response) {
-        	case NEW_PERSON:
-        		// noch nix
-        		break;
-        	case NEW_CONTRACT:
-        		// noch nix
-        		break;
-        	case SHOW_CONTRACTS:
-        		// noch nix
-        		break;
-            case BACK:
-                return;
-        }
+                case NEW_PERSON:
+                    // noch nix
+                    break;
+                case NEW_CONTRACT:
+                    // noch nix
+                    break;
+                case SHOW_CONTRACTS:
+                    // noch nix
+                    break;
+                case BACK:
+                    return;
+            }
         }
     }
 }
