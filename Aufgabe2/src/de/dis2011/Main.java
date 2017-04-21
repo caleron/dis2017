@@ -2,6 +2,8 @@ package de.dis2011;
 
 import de.dis2011.data.EstateAgent;
 
+import java.util.Objects;
+
 /**
  * Hauptklasse
  */
@@ -59,6 +61,13 @@ public class Main {
         final int EDIT_MAKLER = 1;
         final int DELETE_MAKLER = 2;
         final int BACK = 3;
+
+        String passwort = FormUtil.readString("Masterpasswort");
+
+        if (!Objects.equals(passwort, "123")) {
+            System.out.println("Passwort falsch.");
+            return;
+        }
 
         //Maklerverwaltungsmenü
         Menu maklerMenu = new Menu("Makler-Verwaltung");
