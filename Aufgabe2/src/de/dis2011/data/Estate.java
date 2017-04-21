@@ -114,7 +114,7 @@ public class Estate {
                 pstmt.close();
             } else {
                 // Falls schon eine ID vorhanden ist, mache ein Update...
-                String updateSQL = "UPDATE ESTATE SET CITY = ?, STREET = ?, STREETNUMBER = ?, POSTCODE = ?, SQUAREAREA = ?, AGENT = ?";
+                String updateSQL = "UPDATE ESTATE SET CITY = ?, STREET = ?, STREETNUMBER = ?, POSTCODE = ?, SQUAREAREA = ?, AGENT = ? WHERE ID = ?";
                 PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
                 // Setze Anfrage Parameter
@@ -124,6 +124,7 @@ public class Estate {
                 pstmt.setInt(4, postCode);
                 pstmt.setInt(5, squareArea);
                 pstmt.setString(6, agent);
+                pstmt.setInt(7, id);
                 pstmt.executeUpdate();
 
                 pstmt.close();
