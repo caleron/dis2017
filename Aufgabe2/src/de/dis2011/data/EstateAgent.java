@@ -95,6 +95,8 @@ public class EstateAgent {
                 pstmt.close();
                 return ts;
             }
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
