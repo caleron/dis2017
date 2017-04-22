@@ -1,6 +1,9 @@
 package de.dis2011.menus;
 
+import de.dis2011.FormUtil;
 import de.dis2011.Menu;
+import de.dis2011.data.Contract;
+import de.dis2011.data.Person;
 
 public class ContractMenu {
 
@@ -28,10 +31,10 @@ public class ContractMenu {
 
             switch (response) {
                 case NEW_PERSON:
-                    // noch nix
+                    createPerson();
                     break;
                 case NEW_CONTRACT:
-                    // noch nix
+                	createContract();
                     break;
                 case SHOW_CONTRACTS:
                     // noch nix
@@ -40,5 +43,38 @@ public class ContractMenu {
                     return;
             }
         }
+    }
+    
+    /**
+     * Legt eine neue Person an, nachdem der Benutzer
+     * die entprechenden Daten eingegeben hat.
+     */
+    private static void createPerson() {
+        Person person = new Person(false);
+
+        person.setFirst_name(FormUtil.readString("Vorname"));
+        person.setName(FormUtil.readString("Name"));
+        person.setAdress(FormUtil.readString("Adresse"));
+        person.setId(FormUtil.readInt("Id"));
+        person.save();
+
+        System.out.println("Person mit der Id " + person.getId() + " wurde erzeugt.");
+    }
+    
+    /**
+     * Legt einen neuen Vertrag an, nachdem der Benutzer
+     * die entprechenden Daten eingegeben hat.
+     */
+    private static void createContract() {
+        Contract contract = new Contract(false);
+
+        contract.setContract_no(FormUtil.readInt("Vertragsnummer"));
+        contract.setDate(FormUtil.readString("Datum"));
+        contract.setPlace(FormUtil.readString("Ort"));
+        contract.setEstateID(FormUtil.readInt("Objekt ID"));
+        contract.setPersonID(FormUtil.readInt("Personen ID"));
+        contract.save();
+
+        System.out.println("Vetrag mit der Vertragsnummer " + contract.getContract_no() + " wurde erzeugt.");
     }
 }

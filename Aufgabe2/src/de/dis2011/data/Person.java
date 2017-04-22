@@ -6,11 +6,21 @@ import java.sql.*;
  * Created by Max on 22.04.2017.
  */
 public class Person {
-    private int id = -1;
+    private int id;
     private String first_name;
     private String name;
     private String adress;
+    
+    private boolean isInDb;
 
+    public Person(boolean isInDb) {
+    	this.isInDb = isInDb;
+    }
+    
+    public void setInDb(boolean inDb) {
+        isInDb = inDb;
+    }
+    
     public Person(int id) {
         this.id = id;
     }
@@ -88,20 +98,21 @@ public class Person {
      * worden, wird die generierte Id von DB2 geholt und dem Model übergeben.
      */
     public void save() {
-        // Hole Verbindung
+    	   // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            if (id == -1) {
-                String insertSQL = "INSERT INTO PERSON(FIRST_NAME, NAME, ADRESS) VALUES (?,?,?)";
+            if (!isInDb) {
+                String insertSQL = "INSERT INTO PERSON(ID, FIRST_NAME, NAME, ADRESS) VALUES (?,?,?,?)";
 
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setString(1, first_name);
-                pstmt.setString(2, name);
-                pstmt.setString(3, adress);
+                pstmt.setInt(1, id);
+                pstmt.setString(2, first_name);
+                pstmt.setString(3, name);
+                pstmt.setString(4, adress);
                 pstmt.executeUpdate();
 
                 // Hole die Id des engefC<gten Datensatzes

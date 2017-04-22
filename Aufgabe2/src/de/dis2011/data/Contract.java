@@ -6,14 +6,20 @@ import java.sql.*;
  * Created by Max on 22.04.2017.
  */
 public class Contract {
-    private int contract_no = -1;
-    private Date date;
+    private int contract_no;
+    private String date;
     private String place;
     private int estateID;
     private int personID;
+    
+    private boolean isInDb;
 
+    public Contract(boolean isInDb) {
+    	this.isInDb = isInDb;
+    }
+    
     public Contract(int contract_no) {
-        this.contract_no = contract_no;
+    	this.contract_no = contract_no;
     }
 
     public int getContract_no() {
@@ -24,11 +30,11 @@ public class Contract {
         this.contract_no = contract_no;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -76,7 +82,7 @@ public class Contract {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 Contract contract = new Contract(rs.getInt("CONTRACT_NO"));
-                contract.setDate(rs.getDate("DATE"));
+                contract.setDate(rs.getString("DATE"));
                 contract.setPlace(rs.getString("PLACE"));
                 contract.setEstateID(rs.getInt("ESTATE"));
                 contract.setPersonID(rs.getInt("PERSON"));
@@ -103,16 +109,17 @@ public class Contract {
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            if (contract_no == -1) {
-                String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON) VALUES (?,?,?,?)";
+            if (!isInDb) {
+                String insertSQL = "INSERT INTO CONTRACT(CONTRACT_NO, DATE, PLACE, ESTATE, PERSON) VALUES (?,?,?,?,?)";
 
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setDate(1, date);
-                pstmt.setString(2, place);
-                pstmt.setInt(3, estateID);
-                pstmt.setInt(4, personID);
+                pstmt.setInt(1, contract_no);
+                pstmt.setString(2, date);
+                pstmt.setString(3, place);
+                pstmt.setInt(4, estateID);
+                pstmt.setInt(5, personID);
                 pstmt.executeUpdate();
 
                 // Hole die Id des engefC<gten Datensatzes
@@ -128,7 +135,7 @@ public class Contract {
                 PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
                 // Setze Anfrage Parameter
-                pstmt.setDate(1, date);
+                pstmt.setString(1, date);
                 pstmt.setString(2, place);
                 pstmt.setInt(3, estateID);
                 pstmt.setInt(4, personID);
@@ -169,7 +176,7 @@ public class Contract {
             PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
             // Setze Anfrage Parameter
-            pstmt.setDate(1, getDate());
+            pstmt.setString(1, getDate());
             pstmt.setString(2, getPlace());
             pstmt.setInt(3, getEstateID());
             pstmt.setInt(4, getPersonID());
