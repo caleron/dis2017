@@ -82,7 +82,7 @@ public class Estate {
     }
 
     /**
-     * Speichert den Makler in der Datenbank. Ist noch keine ID vergeben
+     * Speichert das Wohnobjekt in der Datenbank. Ist noch keine ID vergeben
      * worden, wird die generierte Id von DB2 geholt und dem Model übergeben.
      */
     public void save() {
@@ -139,7 +139,7 @@ public class Estate {
         Connection con = DB2ConnectionManager.getInstance().getConnection();
 
         try {
-            // SQL-Befehl zum entfernen des Maklers
+            // SQL-Befehl zum entfernen des Wohn Objekts
             String updateSQL = "DELETE FROM ESTATE WHERE ID = ?";
             PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
