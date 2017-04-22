@@ -115,7 +115,6 @@ public class Contract {
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setInt(1, contract_no);
                 pstmt.setString(2, date);
                 pstmt.setString(3, place);
                 pstmt.setInt(4, estateID);
@@ -139,7 +138,7 @@ public class Contract {
                 pstmt.setString(2, place);
                 pstmt.setInt(3, estateID);
                 pstmt.setInt(4, personID);
-                pstmt.setInt(7, contract_no);
+                pstmt.setInt(5, contract_no);
                 pstmt.executeUpdate();
 
                 pstmt.close();

@@ -68,11 +68,10 @@ public class ContractMenu {
     private static void createContract() {
         Contract contract = new Contract(false);
 
-        contract.setContract_no(FormUtil.readInt("Vertragsnummer"));
         contract.setDate(FormUtil.readString("Datum"));
         contract.setPlace(FormUtil.readString("Ort"));
-        contract.setEstateID(FormUtil.readInt("Objekt ID"));
-        contract.setPersonID(FormUtil.readInt("Personen ID"));
+        contract.setEstateID(FormUtil.readInt("Immobilien ID"));
+        contract.setPersonID(FormUtil.readInt("Makler ID"));
         contract.save();
 
         System.out.println("Vetrag mit der Vertragsnummer " + contract.getContract_no() + " wurde erzeugt.");
