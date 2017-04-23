@@ -1,25 +1,29 @@
 package de.dis2011.data;
 
 import java.sql.*;
+import java.util.Objects;
 
-/**
- * Created by Max on 22.04.2017.
- */
-public class Contract {
-    private int contract_no;
-    private String date;
-    private String place;
-    private int estateID;
-    private int personID;
-    
-    private boolean isInDb;
+public abstract class Contract {
+    protected int contract_no = -1;
+    protected String date;
+    protected String place;
+    protected int estateID;
+    protected int personID;
+    protected String contractType;
 
-    public Contract(boolean isInDb) {
-    	this.isInDb = isInDb;
+    public String getContractType() {
+        return contractType;
     }
-    
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
+    }
+
+    public Contract() {
+    }
+
     public Contract(int contract_no) {
-    	this.contract_no = contract_no;
+        this.contract_no = contract_no;
     }
 
     public int getContract_no() {
@@ -53,7 +57,7 @@ public class Contract {
     public void setEstateID(int estateID) {
         this.estateID = estateID;
     }
-    
+
     public int getPersonID() {
         return personID;
     }
@@ -61,6 +65,8 @@ public class Contract {
     public void setPersonID(int personID) {
         this.personID = personID;
     }
+
+    public abstract void loadSpecificFields();
 
     /**
      * Lädt einen Vertrag aus der Datenbank
@@ -81,7 +87,14 @@ public class Contract {
             // Führe Anfrage aus
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                Contract contract = new Contract(rs.getInt("CONTRACT_NO"));
+                Contract contract;
+                String type = rs.getString("CONTRACT_TYPE");
+                if (Objects.equals(type, "house")) {
+                    contract = new PurchaseContract(rs.getInt("CONTRACT_NO"));
+                } else {
+                    contract = new TenancyContract(rs.getInt("CONTRACT_NO"));
+                }
+
                 contract.setDate(rs.getString("DATE"));
                 contract.setPlace(rs.getString("PLACE"));
                 contract.setEstateID(rs.getInt("ESTATE"));
@@ -89,6 +102,8 @@ public class Contract {
 
                 rs.close();
                 pstmt.close();
+
+                contract.loadSpecificFields();
                 return contract;
             }
             rs.close();
@@ -99,26 +114,36 @@ public class Contract {
         return null;
     }
 
+    public void save() {
+        boolean inserted = saveContract();
+        saveSpecificFields(inserted);
+    }
+
+    protected abstract void saveSpecificFields(boolean createNew);
+
+
     /**
      * Speichert den Vertrag in der Datenbank. Ist noch keine Contract_no vergeben
      * worden, wird die generierte Contract_no von DB2 geholt und dem Model übergeben.
+     * <p>
+     * returns true if a new contract was inserted
      */
-    public void save() {
+    private boolean saveContract() {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            if (!isInDb) {
-                String insertSQL = "INSERT INTO CONTRACT(CONTRACT_NO, DATE, PLACE, ESTATE, PERSON) VALUES (?,?,?,?,?)";
+            if (contract_no == -1) {
+                String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON) VALUES (?,?,?,?)";
 
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setString(2, date);
-                pstmt.setString(3, place);
-                pstmt.setInt(4, estateID);
-                pstmt.setInt(5, personID);
+                pstmt.setString(1, date);
+                pstmt.setString(2, place);
+                pstmt.setInt(3, estateID);
+                pstmt.setInt(4, personID);
                 pstmt.executeUpdate();
 
                 // Hole die Id des engefC<gten Datensatzes
@@ -128,6 +153,7 @@ public class Contract {
                 }
                 rs.close();
                 pstmt.close();
+                return true;
             } else {
                 // Falls schon eine ID vorhanden ist, mache ein Update...
                 String updateSQL = "UPDATE CONTRACT SET DATE = ?, PLACE = ?, ESTATE = ?, PERSON = ? WHERE CONTRACT_NO = ?";
@@ -143,45 +169,6 @@ public class Contract {
 
                 pstmt.close();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void delete() {
-        // Hole Verbindung
-        Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-        try {
-            // SQL-Befehl zum entfernen des Vertrags
-            String updateSQL = "DELETE FROM CONTRACT WHERE CONTRACT_NO = ?";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-            // Setze Anfrage Parameter
-            pstmt.setInt(1, getContract_no());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean edit() {
-        // Hole Verbindung
-        Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-        try {
-            // SQL-Befehl zum entfernen des Vetrags
-            String updateSQL = "UPDATE CONTRACT SET DATE = ?, PLACE = ?, ESTATE = ?, PERSON = ? WHERE CONTRACT_NO = ?";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-            // Setze Anfrage Parameter
-            pstmt.setString(1, getDate());
-            pstmt.setString(2, getPlace());
-            pstmt.setInt(3, getEstateID());
-            pstmt.setInt(4, getPersonID());
-
-            //false zurückgeben, falls keine zeile bearbeitet wurde --> falscher login
-            return pstmt.executeUpdate() != 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
