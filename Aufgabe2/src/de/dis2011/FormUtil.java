@@ -51,4 +51,36 @@ public class FormUtil {
 
         return ret;
     }
+
+    public static boolean readBool(String label) {
+        boolean ret = false;
+        boolean finished = false;
+
+        while (!finished) {
+            String line = readString(label + " (1/y oder 0/n)").toLowerCase();
+
+            switch (line) {
+                case "1":
+                case "y":
+                case "j":
+                case "ja":
+                    ret = true;
+                    finished = true;
+                    break;
+                case "0":
+                case "n":
+                case "no":
+                case "nein":
+                    ret = false;
+                    finished = true;
+                    break;
+                default:
+                    System.out.println("Falsches format!");
+                    break;
+            }
+        }
+
+        return ret;
+
+    }
 }
