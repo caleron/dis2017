@@ -1,23 +1,31 @@
 package de.dis2011.data;
 
 import java.sql.*;
+import java.util.Objects;
 
 /**
  * Created by Patrick on 21.04.2017.
  */
-public class Estate {
-    private int id = -1;
-    private String city;
-    private String street;
-    private int streetNumber;
-    private int postCode;
-    private int squareArea;
-    private String agent;
+public abstract class Estate {
+    protected int id = -1;
+    protected String city;
+    protected String street;
+    protected int streetNumber;
+    protected int postCode;
+    protected int squareArea;
+    protected String agent;
+    protected String type;
 
-    public Estate() {
+    public String getType() {
+        return type;
     }
 
-    public Estate(int id) {
+    public Estate(String type) {
+        this.type = type;
+    }
+
+    public Estate(String type, int id) {
+        this(type);
         this.id = id;
     }
 
@@ -62,7 +70,13 @@ public class Estate {
             // Führe Anfrage aus
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                Estate estate = new Estate(rs.getInt("ID"));
+                String type = rs.getString("ESTATE_TYPE");
+                Estate estate;
+                if (Objects.equals(type, "house")) {
+                    estate = new House(rs.getInt("ID"));
+                } else {
+                    estate = new Apartment(rs.getInt("ID"));
+                }
 
                 estate.setCity(rs.getString("CITY"));
                 estate.setStreet(rs.getString("STREET"));
@@ -73,6 +87,9 @@ public class Estate {
 
                 rs.close();
                 pstmt.close();
+
+                estate.loadSpecificFields();
+
                 return estate;
             }
         } catch (SQLException e) {
@@ -81,18 +98,27 @@ public class Estate {
         return null;
     }
 
+    public abstract void loadSpecificFields();
+
+    public void save() {
+        boolean inserted = saveEstate();
+        saveSpecificFields(inserted);
+    }
+
+    protected abstract void saveSpecificFields(boolean createNew);
+
     /**
      * Speichert das Wohnobjekt in der Datenbank. Ist noch keine ID vergeben
      * worden, wird die generierte Id von DB2 geholt und dem Model übergeben.
      */
-    public void save() {
+    private boolean saveEstate() {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (id == -1) {
-                String insertSQL = "INSERT INTO ESTATE(CITY, STREET, STREETNUMBER, POSTCODE, SQUAREAREA, AGENT) VALUES (?,?,?,?,?,?)";
+                String insertSQL = "INSERT INTO ESTATE(CITY, STREET, STREETNUMBER, POSTCODE, SQUAREAREA, AGENT, ESTATE_TYPE) VALUES (?,?,?,?,?,?,?)";
 
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
@@ -112,6 +138,7 @@ public class Estate {
                 }
                 rs.close();
                 pstmt.close();
+                return true;
             } else {
                 // Falls schon eine ID vorhanden ist, mache ein Update...
                 String updateSQL = "UPDATE ESTATE SET CITY = ?, STREET = ?, STREETNUMBER = ?, POSTCODE = ?, SQUAREAREA = ?, AGENT = ? WHERE ID = ?";
@@ -132,6 +159,7 @@ public class Estate {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public void delete() {
@@ -146,8 +174,12 @@ public class Estate {
             // Setze Anfrage Parameter
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+
+            deleteSpecific();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    protected abstract void deleteSpecific();
 }
