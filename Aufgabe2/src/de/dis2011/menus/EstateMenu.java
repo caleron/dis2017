@@ -2,8 +2,12 @@ package de.dis2011.menus;
 
 import de.dis2011.FormUtil;
 import de.dis2011.Menu;
+import de.dis2011.data.Apartment;
 import de.dis2011.data.Estate;
 import de.dis2011.data.EstateAgent;
+import de.dis2011.data.House;
+
+import java.util.Objects;
 
 public class EstateMenu {
 
@@ -71,20 +75,41 @@ public class EstateMenu {
     }
 
     private static void createEstate() {
-        Estate estate = new Estate();
-        estate.setCity(FormUtil.readString("Stadt"));
-        estate.setStreet(FormUtil.readString("Straße"));
-        estate.setStreetNumber(FormUtil.readInt("Hausnummer"));
-        estate.setPostCode(FormUtil.readInt("PLZ"));
-        estate.setSquareArea(FormUtil.readInt("Fläche in qm"));
+        String type = "";
+        while (!Objects.equals(type, "haus") && !Objects.equals(type, "wohnung")) {
+            type = FormUtil.readString("Typ der Immobilie (Haus oder Wohnung):").toLowerCase();
+        }
 
-        estate.setAgent(currentAgent.getLogin());
+        Estate estate;
+        if (type.equals("haus")) {
+            estate = new House();
+        } else {
+            estate = new Apartment();
+        }
+
+        readEstateFields(estate, type);
+
         estate.save();
         System.out.println("Immobilie wurde mit ID " + estate.getId() + " erzeugt");
     }
 
-    private static void editEstate() {
-        Estate estate = new Estate(FormUtil.readInt("ID der Immobilie"));
+    private static void readEstateFields(Estate estate, String type) {
+        if (type.equals("haus")) {
+            estate = new House();
+            House house = (House) estate;
+            house.setFloors(FormUtil.readInt("Anzahl Stockwerke:"));
+            house.setGarden(FormUtil.readBool("Garten"));
+            house.setPrice(FormUtil.readInt("Preis"));
+        } else {
+            estate = new Apartment();
+            Apartment apartment = (Apartment) estate;
+            apartment.setFloor(FormUtil.readInt("Etage"));
+            apartment.setRent(FormUtil.readInt("Miete"));
+            apartment.setRooms(FormUtil.readInt("Anzahl Räume"));
+            apartment.setBalcony(FormUtil.readBool("Hat Balkon"));
+            apartment.setBuiltInKitchen(FormUtil.readBool("Hat Einbauküche"));
+        }
+
         estate.setCity(FormUtil.readString("Stadt"));
         estate.setStreet(FormUtil.readString("Straße"));
         estate.setStreetNumber(FormUtil.readInt("Hausnummer"));
@@ -92,6 +117,19 @@ public class EstateMenu {
         estate.setSquareArea(FormUtil.readInt("Fläche in qm"));
 
         estate.setAgent(currentAgent.getLogin());
+    }
+
+    private static void editEstate() {
+        int id = FormUtil.readInt("ID der Immobilie");
+        Estate estate = Estate.load(id);
+
+        if (estate == null) {
+            System.out.println("Immobilie mit ID " + id + " existiert nicht.");
+            return;
+        }
+
+        readEstateFields(estate, estate.getType());
+
         estate.save();
         System.out.println("Immobilie mit ID " + estate.getId() + " wurde bearbeitet");
     }
