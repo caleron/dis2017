@@ -34,7 +34,7 @@ public class ContractMenu {
                     createPerson();
                     break;
                 case NEW_CONTRACT:
-                	createContract();
+                    createContract();
                     break;
                 case SHOW_CONTRACTS:
                     // noch nix
@@ -44,34 +44,34 @@ public class ContractMenu {
             }
         }
     }
-    
+
     /**
      * Legt eine neue Person an, nachdem der Benutzer
      * die entprechenden Daten eingegeben hat.
      */
     private static void createPerson() {
-        Person person = new Person(false);
+        Person person = new Person();
 
         person.setFirst_name(FormUtil.readString("Vorname"));
         person.setName(FormUtil.readString("Name"));
         person.setAdress(FormUtil.readString("Adresse"));
-        person.setId(FormUtil.readInt("Id"));
         person.save();
 
         System.out.println("Person mit der Id " + person.getId() + " wurde erzeugt.");
     }
-    
+
     /**
      * Legt einen neuen Vertrag an, nachdem der Benutzer
      * die entprechenden Daten eingegeben hat.
      */
     private static void createContract() {
+        int estateId = (FormUtil.readInt("Immobilien ID"));
         Contract contract = new Contract(false);
 
         contract.setDate(FormUtil.readString("Datum"));
         contract.setPlace(FormUtil.readString("Ort"));
-        contract.setEstateID(FormUtil.readInt("Immobilien ID"));
         contract.setPersonID(FormUtil.readInt("Makler ID"));
+        contract.setEstateID(estateId);
         contract.save();
 
         System.out.println("Vetrag mit der Vertragsnummer " + contract.getContract_no() + " wurde erzeugt.");
