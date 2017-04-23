@@ -1,6 +1,8 @@
 package de.dis2011.data;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Contract {
@@ -173,5 +175,45 @@ public abstract class Contract {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static List<Contract> getAllContracts() {
+        ArrayList<Contract> list = new ArrayList<>();
+        try {
+            // Hole Verbindung
+            Connection con = DB2ConnectionManager.getInstance().getConnection();
+
+            // Erzeuge Anfrage
+            String selectSQL = "SELECT * FROM CONTRACT";
+            PreparedStatement pstmt = con.prepareStatement(selectSQL);
+
+            // Führe Anfrage aus
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Contract contract;
+                String type = rs.getString("CONTRACT_TYPE");
+                if (Objects.equals(type, "house")) {
+                    contract = new PurchaseContract(rs.getInt("CONTRACT_NO"));
+                } else {
+                    contract = new TenancyContract(rs.getInt("CONTRACT_NO"));
+                }
+
+                contract.setDate(rs.getString("DATE"));
+                contract.setPlace(rs.getString("PLACE"));
+                contract.setEstateID(rs.getInt("ESTATE"));
+                contract.setPersonID(rs.getInt("PERSON"));
+
+                rs.close();
+                pstmt.close();
+
+                contract.loadSpecificFields();
+                list.add(contract);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
