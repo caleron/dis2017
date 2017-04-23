@@ -3,6 +3,7 @@ package de.dis2011;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 /**
  * Kleine Helferklasse zum Einlesen von Formulardaten
@@ -81,6 +82,23 @@ public class FormUtil {
         }
 
         return ret;
+    }
 
+    public static Date readDate(String label) {
+        System.out.println(label + ": ");
+        Date date = null;
+        while (date == null) {
+            int year = readInt(" -Jahr");
+            int month = readInt(" -Monat");
+            int day = readInt(" -Tag");
+
+            //ist deprecated, ich weiß
+            try {
+                date = new Date(year, month, day);
+            } catch (Exception e) {
+                System.out.println("Ungültiges Datum!");
+            }
+        }
+        return date;
     }
 }
