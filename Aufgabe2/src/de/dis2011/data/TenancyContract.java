@@ -32,7 +32,7 @@ public class TenancyContract extends Contract {
     }
 
     public TenancyContract(int contract_no) {
-        super(contract_no);
+        super("apartment", contract_no);
     }
 
     @Override

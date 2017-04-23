@@ -23,7 +23,7 @@ public class PurchaseContract extends Contract {
     }
 
     public PurchaseContract(int id) {
-        super(id);
+        super("house", id);
     }
 
     @Override

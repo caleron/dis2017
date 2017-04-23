@@ -15,14 +15,13 @@ public abstract class Contract {
         return contractType;
     }
 
-    public void setContractType(String contractType) {
-        this.contractType = contractType;
+
+    public Contract(String type) {
+        this.contractType = type;
     }
 
-    public Contract() {
-    }
-
-    public Contract(int contract_no) {
+    public Contract(String type, int contract_no) {
+        this(type);
         this.contract_no = contract_no;
     }
 
@@ -135,7 +134,7 @@ public abstract class Contract {
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (contract_no == -1) {
-                String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON) VALUES (?,?,?,?)";
+                String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON, CONTRACT_TYPE) VALUES (?,?,?,?,?)";
 
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
 
@@ -144,6 +143,7 @@ public abstract class Contract {
                 pstmt.setString(2, place);
                 pstmt.setInt(3, estateID);
                 pstmt.setInt(4, personID);
+                pstmt.setString(5, contractType);
                 pstmt.executeUpdate();
 
                 // Hole die Id des engefC<gten Datensatzes
