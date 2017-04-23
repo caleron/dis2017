@@ -1,6 +1,10 @@
 package de.dis2011.data;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 
 public class TenancyContract extends Contract {
     private Date startDate;
@@ -29,6 +33,10 @@ public class TenancyContract extends Contract {
 
     public void setAdditionalCosts(double additionalCosts) {
         this.additionalCosts = additionalCosts;
+    }
+
+    public TenancyContract() {
+        super("apartment");
     }
 
     public TenancyContract(int contract_no) {

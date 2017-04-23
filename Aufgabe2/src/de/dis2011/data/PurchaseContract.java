@@ -22,6 +22,10 @@ public class PurchaseContract extends Contract {
         this.noOfInstallments = noOfInstallments;
     }
 
+    public PurchaseContract() {
+        super("house");
+    }
+
     public PurchaseContract(int id) {
         super("house", id);
     }
