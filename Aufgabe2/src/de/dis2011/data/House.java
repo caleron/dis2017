@@ -34,6 +34,10 @@ public class House extends Estate {
         this.garden = garden;
     }
 
+    public House() {
+        super("house");
+    }
+
     public House(int id) {
         super("house", id);
     }

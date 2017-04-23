@@ -55,6 +55,10 @@ public class Apartment extends Estate {
         this.builtInKitchen = builtInKitchen;
     }
 
+    public Apartment() {
+        super("apartment");
+    }
+
     public Apartment(int id) {
         super("apartment", id);
     }
