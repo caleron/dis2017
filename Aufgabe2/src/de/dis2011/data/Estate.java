@@ -1,6 +1,9 @@
 package de.dis2011.data;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 
 /**
@@ -77,7 +80,7 @@ public abstract class Estate {
                 } else {
                     estate = new Apartment(rs.getInt("ID"));
                 }
-                
+
                 estate.setCity(rs.getString("CITY"));
                 estate.setStreet(rs.getString("STREET"));
                 estate.setStreetNumber(rs.getInt("STREETNUMBER"));
@@ -166,37 +169,8 @@ public abstract class Estate {
     public void delete(String type) {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
-        
-        if (type.equals("house")) {
-        	try {
-                // SQL-Befehl zum entfernen des Wohn Objekts
-                String updateSQL = "DELETE FROM HOUSE WHERE ESTATE = ?";
-                PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
-                // Setze Anfrage Parameter
-                pstmt.setInt(1, id);
-                pstmt.executeUpdate();
-
-                deleteSpecific();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (type.equals("apartment")) {
-        	try {
-                // SQL-Befehl zum entfernen des Wohn Objekts
-                String updateSQL = "DELETE FROM APARTMENT WHERE ESTATE = ?";
-                PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-                // Setze Anfrage Parameter
-                pstmt.setInt(1, id);
-                pstmt.executeUpdate();
-
-                deleteSpecific();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+        deleteSpecific();
         try {
             // SQL-Befehl zum entfernen des Wohn Objekts
             String updateSQL = "DELETE FROM ESTATE WHERE ID = ?";
@@ -206,7 +180,6 @@ public abstract class Estate {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
 
-            deleteSpecific();
         } catch (SQLException e) {
             e.printStackTrace();
         }
