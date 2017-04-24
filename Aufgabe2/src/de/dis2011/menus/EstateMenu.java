@@ -94,14 +94,12 @@ public class EstateMenu {
     }
 
     private static void readEstateFields(Estate estate, String type) {
-        if (type.equals("haus")) {
-            estate = new House();
+        if (type.equals("haus") || type.equals("house")) {
             House house = (House) estate;
-            house.setFloors(FormUtil.readInt("Anzahl Stockwerke:"));
+            house.setFloors(FormUtil.readInt("Anzahl Stockwerke"));
             house.setGarden(FormUtil.readBool("Garten"));
             house.setPrice(FormUtil.readInt("Preis"));
-        } else {
-            estate = new Apartment();
+        } else if (type.equals("wohnung") || type.equals("apartment")){
             Apartment apartment = (Apartment) estate;
             apartment.setFloor(FormUtil.readInt("Etage"));
             apartment.setRent(FormUtil.readInt("Miete"));
@@ -141,7 +139,7 @@ public class EstateMenu {
             System.out.println("Immobilie mit ID " + id + " existiert nicht.");
             return;
         }
-        estate.delete();
+        estate.delete(estate.getType());
         System.out.println("Immobilie mit ID " + id + " wurde gelöscht.");
     }
 }

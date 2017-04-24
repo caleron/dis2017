@@ -77,7 +77,7 @@ public abstract class Estate {
                 } else {
                     estate = new Apartment(rs.getInt("ID"));
                 }
-
+                
                 estate.setCity(rs.getString("CITY"));
                 estate.setStreet(rs.getString("STREET"));
                 estate.setStreetNumber(rs.getInt("STREETNUMBER"));
@@ -119,16 +119,17 @@ public abstract class Estate {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (id == -1) {
                 String insertSQL = "INSERT INTO ESTATE(CITY, STREET, STREETNUMBER, POSTCODE, SQUAREAREA, AGENT, ESTATE_TYPE) VALUES (?,?,?,?,?,?,?)";
+                String[] id_col = {"ID"};
+                PreparedStatement pstmt = con.prepareStatement(insertSQL, id_col);
 
-                PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
-
-                // Setze Anfrageparameter und fC<hre Anfrage ausp
+                // Setze Anfrageparameter und fC<hre Anfrage ausp      
                 pstmt.setString(1, city);
                 pstmt.setString(2, street);
                 pstmt.setInt(3, streetNumber);
                 pstmt.setInt(4, postCode);
                 pstmt.setInt(5, squareArea);
                 pstmt.setString(6, agent);
+                pstmt.setString(7, type);
                 pstmt.executeUpdate();
 
                 // Hole die Id des engefC<gten Datensatzes
@@ -162,9 +163,39 @@ public abstract class Estate {
         return false;
     }
 
-    public void delete() {
+    public void delete(String type) {
         // Hole Verbindung
         Connection con = DB2ConnectionManager.getInstance().getConnection();
+        
+        if (type.equals("house")) {
+        	try {
+                // SQL-Befehl zum entfernen des Wohn Objekts
+                String updateSQL = "DELETE FROM HOUSE WHERE ESTATE = ?";
+                PreparedStatement pstmt = con.prepareStatement(updateSQL);
+
+                // Setze Anfrage Parameter
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+
+                deleteSpecific();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else if (type.equals("apartment")) {
+        	try {
+                // SQL-Befehl zum entfernen des Wohn Objekts
+                String updateSQL = "DELETE FROM APARTMENT WHERE ESTATE = ?";
+                PreparedStatement pstmt = con.prepareStatement(updateSQL);
+
+                // Setze Anfrage Parameter
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+
+                deleteSpecific();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
         try {
             // SQL-Befehl zum entfernen des Wohn Objekts

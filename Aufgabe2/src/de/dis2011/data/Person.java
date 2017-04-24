@@ -98,8 +98,8 @@ public class Person {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (id == -1) {
                 String insertSQL = "INSERT INTO PERSON(FIRST_NAME, NAME, ADRESS) VALUES (?,?,?)";
-
-                PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+                String[] id_col = {"ID"};
+                PreparedStatement pstmt = con.prepareStatement(insertSQL, id_col);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
                 pstmt.setString(1, first_name);
@@ -110,7 +110,7 @@ public class Person {
                 // Hole die Id des engefC<gten Datensatzes
                 ResultSet rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
-                    id = rs.getInt(1);
+                	id = rs.getInt(1);
                 }
                 rs.close();
                 pstmt.close();
