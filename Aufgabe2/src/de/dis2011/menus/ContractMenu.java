@@ -78,6 +78,15 @@ public class ContractMenu {
             return;
         }
 
+        int personID = FormUtil.readInt("Person ID");
+
+        Person person = Person.load(personID);
+
+        if (person == null) {
+            System.out.println("Person mit ID " + personID + " existiert nicht.");
+            return;
+        }
+
         Contract contract;
         if (estate.getType().equals("house")) {
             contract = new PurchaseContract();
@@ -92,9 +101,9 @@ public class ContractMenu {
             tenancyContract.setAdditionalCosts(FormUtil.readInt("Nebenkosten"));
         }
 
+        contract.setPersonID(personID);
         contract.setDate(FormUtil.readString("Datum"));
         contract.setPlace(FormUtil.readString("Ort"));
-        contract.setPersonID(FormUtil.readInt("Makler ID"));
         contract.setEstateID(estateId);
         contract.save();
 
