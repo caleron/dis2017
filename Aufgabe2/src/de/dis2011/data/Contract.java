@@ -1,6 +1,9 @@
 package de.dis2011.data;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -137,8 +140,8 @@ public abstract class Contract {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (contract_no == -1) {
                 String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON, CONTRACT_TYPE) VALUES (?,?,?,?,?)";
-
-                PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+                String[] id_col = {"ID"};
+                PreparedStatement pstmt = con.prepareStatement(insertSQL, id_col);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp
                 pstmt.setString(1, date);
@@ -202,9 +205,6 @@ public abstract class Contract {
                 contract.setPlace(rs.getString("PLACE"));
                 contract.setEstateID(rs.getInt("ESTATE"));
                 contract.setPersonID(rs.getInt("PERSON"));
-
-                rs.close();
-                pstmt.close();
 
                 contract.loadSpecificFields();
                 list.add(contract);
