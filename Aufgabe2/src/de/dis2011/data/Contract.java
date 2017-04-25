@@ -140,7 +140,7 @@ public abstract class Contract {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
             if (contract_no == -1) {
                 String insertSQL = "INSERT INTO CONTRACT(DATE, PLACE, ESTATE, PERSON, CONTRACT_TYPE) VALUES (?,?,?,?,?)";
-                String[] id_col = {"ID"};
+                String[] id_col = {"CONTRACT_NO"};
                 PreparedStatement pstmt = con.prepareStatement(insertSQL, id_col);
 
                 // Setze Anfrageparameter und fC<hre Anfrage ausp

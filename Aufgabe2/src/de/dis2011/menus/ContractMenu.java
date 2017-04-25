@@ -115,9 +115,9 @@ public class ContractMenu {
 
         for (Contract contract : contracts) {
             if (contract instanceof PurchaseContract) {
-                System.out.println("Kaufvertrag mit ID" + contract.getContract_no());
+                System.out.println("Kaufvertrag mit ID " + contract.getContract_no());
             } else {
-                System.out.println("Mietvertrag mit ID" + contract.getContract_no());
+                System.out.println("Mietvertrag mit ID " + contract.getContract_no());
             }
         }
     }
@@ -132,12 +132,12 @@ public class ContractMenu {
         }
 
         if (contract instanceof PurchaseContract) {
-            System.out.print("Kaufvertrag mit ID" + contract.getContract_no());
+            System.out.println("Kaufvertrag mit ID " + contract.getContract_no());
             PurchaseContract purchaseContract = (PurchaseContract) contract;
             System.out.println("Interestrate: " + purchaseContract.getInterestRate());
             System.out.println("Anzahl Raten: " + purchaseContract.getNoOfInstallments());
         } else {
-            System.out.println("Mietvertrag mit ID" + contract.getContract_no());
+            System.out.println("Mietvertrag mit ID " + contract.getContract_no());
             TenancyContract tenancyContract = (TenancyContract) contract;
             System.out.println("Startdatum: " + tenancyContract.getStartDate());
             System.out.println("Mietdauer: " + tenancyContract.getDuration());
