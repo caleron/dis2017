@@ -1,13 +1,14 @@
 package de.dis2011.data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="CONTRACT")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Contract {
+public class Contract implements Serializable{
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="CONTRACT_NO")
     private int contract_no;
     @Column(name="DATE")
@@ -59,7 +60,13 @@ public abstract class Contract {
         return person;
     }
 
-    public void setPerson(Person personID) {
+    public void setPerson(Person person) {
         this.person = person;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Vertrag vom " + getDate() + ": " + getPerson().toString() + ", " + getEstate().toString();
     }
 }

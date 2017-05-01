@@ -49,7 +49,10 @@ public class TenancyContract extends Contract {
         this.additionalCosts = additionalCosts;
     }
 
-    public TenancyContract(){}
-
-
+    @Override
+    public String toString()
+    {
+        return super.toString() + "\nOrt: " + getPlace() + "\nStartdatum: " + getStartDate() +
+                "\nDauer: " + getDuration() + "\nZus. Kosten: " + getAdditionalCosts();
+    }
 }

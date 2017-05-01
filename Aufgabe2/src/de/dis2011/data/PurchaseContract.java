@@ -35,7 +35,10 @@ public class PurchaseContract extends Contract {
         this.noOfInstallments = noOfInstallments;
     }
 
-    public PurchaseContract(){}
-
-
+    @Override
+    public String toString()
+    {
+        return super.toString() + "\nOrt: " + getPlace() + "\nInterestrate: " + getInterestRate() +
+                "\nRaten: " + getNoOfInstallments();
+    }
 }

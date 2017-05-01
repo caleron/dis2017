@@ -55,4 +55,10 @@ public class Person {
     public void setAdress(String adress) {
         this.adress = adress;
     }
+
+    @Override
+    public String toString()
+    {
+        return getFirst_name() + " " + getName();
+    }
 }
