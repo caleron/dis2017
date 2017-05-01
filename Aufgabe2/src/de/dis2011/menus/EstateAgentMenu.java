@@ -7,16 +7,22 @@ import de.dis2011.data.EstateAgent;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.HibernateException;
 import org.hibernate.cfg.Configuration;
+
 
 import java.util.Objects;
 
 public class EstateAgentMenu {
 
+    private static SessionFactory sessionFactory;
+
     /**
      * Zeigt die Makler-Verwaltung
      */
     public static void show() {
+        sessionFactory = new Configuration().configure().buildSessionFactory();
+
         //Menüoptionen
         final int NEW_MAKLER = 0;
         final int EDIT_MAKLER = 1;
@@ -62,40 +68,74 @@ public class EstateAgentMenu {
      * die entprechenden Daten eingegeben hat.
      */
     private static void newMakler() {
-
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
         Session session = sessionFactory.openSession();
-        Transaction tx = session.beginTransaction();
+        Transaction tx = null;
+        try
+        {
+            tx = session.beginTransaction();
 
-        EstateAgent m = new EstateAgent();
+            EstateAgent agent = new EstateAgent();
 
-        m.setName(FormUtil.readString("Name"));
-        m.setAddress(FormUtil.readString("Adresse"));
-        m.setLogin(FormUtil.readString("Login"));
-        m.setPassword(FormUtil.readString("Passwort"));
+            agent.setName(FormUtil.readString("Name"));
+            agent.setAddress(FormUtil.readString("Adresse"));
+            agent.setLogin(getLoginFromUser(session));
+            agent.setPassword(FormUtil.readString("Passwort"));
 
-        session.save(m);
-        tx.commit();
-        session.close();
-        System.out.println("Makler mit dem Login " + m.getLogin() + " wurde erzeugt.");
+            session.save(agent);
+            tx.commit();
+
+            System.out.println("Makler mit dem Login " + agent.getLogin() + " wurde erzeugt.");
+        }
+        catch(HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            System.out.println("Makler konnte nicht erzeugt werden: HibernateException");
+        }
+        finally {
+            session.close();
+        }
+
     }
 
     /**
      * Bearbeitet einen Makler anhand des Logins
      */
     private static void editMakler() {
-        EstateAgent m = new EstateAgent();
 
-        m.setLogin(FormUtil.readString("Login"));
-        m.setName(FormUtil.readString("Name"));
-        m.setAddress(FormUtil.readString("Adresse"));
-        m.setPassword(FormUtil.readString("Passwort"));
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try
+        {
+            tx = session.beginTransaction();
+            String login = FormUtil.readString("Login");
+            EstateAgent agent = (EstateAgent) session.get(EstateAgent.class, login);
 
-        if (true) {
-            System.out.println("Makler mit dem Login " + m.getLogin() + " wurde bearbeitet.");
-        } else {
-            //falls makler nicht in der Datenbank, wird ein neuer erstellt
-            System.out.println("Makler mit dem Login " + m.getLogin() + " nicht gefunden, stattdessen neuer erstellt.");
+            if (agent != null) {
+                agent.setName(FormUtil.readString("Name"));
+                agent.setAddress(FormUtil.readString("Adresse"));
+                agent.setPassword(FormUtil.readString("Passwort"));
+                session.save(agent);
+                tx.commit();
+                System.out.println("Makler mit dem Login " + login + " wurde bearbeitet.");
+            } else {
+                //falls makler nicht in der Datenbank, wird ein neuer erstellt
+                System.out.println("Makler mit dem Login " + login + " nicht gefunden.");
+            }
+        }
+        catch(HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            System.out.println("Makler konnte nicht bearbeitet werden: HibernateException");
+        }
+        finally
+        {
+            session.close();
         }
     }
 
@@ -103,10 +143,48 @@ public class EstateAgentMenu {
      * Löscht einen Makler anhand des Logins
      */
     private static void deleteMakler() {
-        EstateAgent m = new EstateAgent();
 
-        m.setLogin(FormUtil.readString("Login"));
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
 
-        System.out.println("Makler mit der Login " + m.getLogin() + " wurde gelöscht.");
+        try
+        {
+            tx = session.beginTransaction();
+
+            String login = FormUtil.readString("Login");
+            EstateAgent agent = (EstateAgent) session.get(EstateAgent.class, login);
+
+            session.delete(agent);
+            tx.commit();
+            System.out.println("Makler mit der Login " + login + " wurde gelöscht.");
+        }
+        catch(HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            System.out.println("Makler konnte nicht gelöscht werden: HibernateException");
+        }
+        finally
+        {
+            session.close();
+        }
+
+
+    }
+
+    private static String getLoginFromUser(Session session)
+    {
+        while(true) {
+            String login = FormUtil.readString("Login");
+            EstateAgent existingagent = (EstateAgent) session.get(EstateAgent.class, login);
+            if (existingagent == null) {
+                return login;
+            }
+            else {
+                System.out.println("Login bereits vorhanden. Bitte wähle einen anderen aus.");
+            }
+        }
     }
 }
