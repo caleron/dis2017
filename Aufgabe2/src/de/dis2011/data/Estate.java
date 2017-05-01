@@ -16,7 +16,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Estate implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="ID")
     private int id;
     @Column(name="CITY")

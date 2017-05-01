@@ -13,7 +13,7 @@ import java.sql.SQLException;
 @Entity
 @Table(name="HOUSE")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@PrimaryKeyJoinColumn(name="ESTATE", referencedColumnName = "ID")
+@PrimaryKeyJoinColumn(name="ESTATE")
 public class House extends Estate {
     @Column(name="FLOOR")
     private int floor;

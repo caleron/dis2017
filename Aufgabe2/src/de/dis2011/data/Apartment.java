@@ -3,10 +3,7 @@ package de.dis2011.data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +16,7 @@ import java.sql.SQLException;
 @Entity
 @Table(name="APARTMENT")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@PrimaryKeyJoinColumn(name="ESTATE", referencedColumnName = "ID")
+@PrimaryKeyJoinColumn(name = "ESTATE", referencedColumnName = "ID")
 public class Apartment extends Estate implements Serializable {
     @Column(name="FLOOR")
     private int floor;
