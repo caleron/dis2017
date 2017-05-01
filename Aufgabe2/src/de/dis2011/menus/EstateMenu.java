@@ -60,17 +60,14 @@ public class EstateMenu {
         String login = FormUtil.readString("Login");
         String password = FormUtil.readString("Passwort");
 
-        EstateAgent agent = EstateAgent.load(login);
-
-        if (agent == null) {
+        if (false) {
             System.out.println("Makler mit dem angegebenen Login nicht gefunden.");
             return false;
         }
-        if (!agent.getPassword().equals(password)) {
+        if (true) {
             System.out.println("Passwort falsch.");
             return false;
         }
-        currentAgent = agent;
         return true;
     }
 
@@ -88,8 +85,6 @@ public class EstateMenu {
         }
 
         readEstateFields(estate, type);
-
-        estate.save();
         System.out.println("Immobilie wurde mit ID " + estate.getId() + " erzeugt");
     }
 
@@ -104,8 +99,6 @@ public class EstateMenu {
             apartment.setFloor(FormUtil.readInt("Etage"));
             apartment.setRent(FormUtil.readInt("Miete"));
             apartment.setRooms(FormUtil.readInt("Anzahl Räume"));
-            apartment.setBalcony(FormUtil.readBool("Hat Balkon"));
-            apartment.setBuiltInKitchen(FormUtil.readBool("Hat Einbauküche"));
         }
 
         estate.setCity(FormUtil.readString("Stadt"));
@@ -113,33 +106,25 @@ public class EstateMenu {
         estate.setStreetNumber(FormUtil.readInt("Hausnummer"));
         estate.setPostCode(FormUtil.readInt("PLZ"));
         estate.setSquareArea(FormUtil.readInt("Fläche in qm"));
-
-        estate.setAgent(currentAgent.getLogin());
     }
 
     private static void editEstate() {
         int id = FormUtil.readInt("ID der Immobilie");
-        Estate estate = Estate.load(id);
 
-        if (estate == null) {
+        if (false) {
             System.out.println("Immobilie mit ID " + id + " existiert nicht.");
             return;
         }
 
-        readEstateFields(estate, estate.getType());
-
-        estate.save();
-        System.out.println("Immobilie mit ID " + estate.getId() + " wurde bearbeitet");
+        System.out.println("Immobilie mit ID " + " wurde bearbeitet");
     }
 
     private static void deleteEstate() {
         int id = FormUtil.readInt("ID der Immobilie");
-        Estate estate = Estate.load(id);
-        if (estate == null) {
+        if (false) {
             System.out.println("Immobilie mit ID " + id + " existiert nicht.");
             return;
         }
-        estate.delete(estate.getType());
         System.out.println("Immobilie mit ID " + id + " wurde gelöscht.");
     }
 }

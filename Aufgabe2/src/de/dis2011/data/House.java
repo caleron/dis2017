@@ -1,13 +1,22 @@
 package de.dis2011.data;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+@Entity
+@Table(name="HOUSE")
+@PrimaryKeyJoinColumn(name="ESTATE")
 public class House extends Estate {
+    @Column(name="FLOOR")
     private int floors;
+    @Column(name="PRICE")
     private double price;
+    @Column(name="GARDEN")
     private boolean garden;
 
     public int getFloors() {
@@ -34,94 +43,5 @@ public class House extends Estate {
         this.garden = garden;
     }
 
-    public House() {
-        super("house");
-    }
-
-    public House(int id) {
-        super("house", id);
-    }
-
-    @Override
-    public void loadSpecificFields() {
-        try {
-            // Hole Verbindung
-            Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-            // Erzeuge Anfrage
-            String selectSQL = "SELECT * FROM HOUSE WHERE ESTATE = ?";
-            PreparedStatement pstmt = con.prepareStatement(selectSQL);
-            pstmt.setInt(1, id);
-
-            // Führe Anfrage aus
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                floors = rs.getInt("FLOOR");
-                price = rs.getDouble("PRICE");
-                garden = rs.getBoolean("GARDEN");
-
-                rs.close();
-                pstmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void saveSpecificFields(boolean createNew) {
-        // Hole Verbindung
-        Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-        try {
-            // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            if (createNew) {
-                String insertSQL = "INSERT INTO HOUSE(FLOOR, PRICE, GARDEN, ESTATE) VALUES (?,?,?,?)";
-
-                PreparedStatement pstmt = con.prepareStatement(insertSQL);
-
-                // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setInt(1, floors);
-                pstmt.setDouble(2, price);
-                pstmt.setBoolean(3, garden);
-                pstmt.setInt(4, id);
-                pstmt.executeUpdate();
-
-                pstmt.close();
-            } else {
-                // Falls schon eine ID vorhanden ist, mache ein Update...
-                String updateSQL = "UPDATE HOUSE SET FLOOR = ?, PRICE = ?, GARDEN = ? WHERE ESTATE = ?";
-                PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-                // Setze Anfrage Parameter
-                pstmt.setInt(1, floors);
-                pstmt.setDouble(2, price);
-                pstmt.setBoolean(3, garden);
-                pstmt.setInt(4, id);
-                pstmt.executeUpdate();
-
-                pstmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void deleteSpecific() {
-        // Hole Verbindung
-        Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-        try {
-            // SQL-Befehl zum entfernen des Wohn Objekts
-            String updateSQL = "DELETE FROM HOUSE WHERE ESTATE = ?";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-            // Setze Anfrage Parameter
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    public House() {}
 }

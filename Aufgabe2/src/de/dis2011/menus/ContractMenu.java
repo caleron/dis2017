@@ -4,8 +4,6 @@ import de.dis2011.FormUtil;
 import de.dis2011.Menu;
 import de.dis2011.data.*;
 
-import java.util.List;
-
 public class ContractMenu {
 
 
@@ -60,8 +58,6 @@ public class ContractMenu {
         person.setFirst_name(FormUtil.readString("Vorname"));
         person.setName(FormUtil.readString("Name"));
         person.setAdress(FormUtil.readString("Adresse"));
-        person.save();
-
         System.out.println("Person mit der Id " + person.getId() + " wurde erzeugt.");
     }
 
@@ -71,24 +67,17 @@ public class ContractMenu {
      */
     private static void createContract() {
         int estateId = (FormUtil.readInt("Immobilien ID"));
-        Estate estate = Estate.load(estateId);
 
-        if (estate == null) {
+        if (false) {
             System.out.println("Immobilie mit ID " + estateId + " existiert nicht.");
-            return;
+
         }
 
         int personID = FormUtil.readInt("Person ID");
 
-        Person person = Person.load(personID);
-
-        if (person == null) {
-            System.out.println("Person mit ID " + personID + " existiert nicht.");
-            return;
-        }
-
         Contract contract;
-        if (estate.getType().equals("house")) {
+        //if is haus
+        if (true ) {
             contract = new PurchaseContract();
             PurchaseContract purchaseContract = (PurchaseContract) contract;
             purchaseContract.setNoOfInstallments(FormUtil.readInt("Anzahl Raten"));
@@ -100,53 +89,25 @@ public class ContractMenu {
             tenancyContract.setDuration(FormUtil.readInt("Dauer in Monaten"));
             tenancyContract.setAdditionalCosts(FormUtil.readInt("Nebenkosten"));
         }
-
-        contract.setPersonID(personID);
         contract.setDate(FormUtil.readString("Datum"));
         contract.setPlace(FormUtil.readString("Ort"));
-        contract.setEstateID(estateId);
-        contract.save();
 
-        System.out.println("Vetrag mit der Vertragsnummer " + contract.getContract_no() + " wurde erzeugt.");
+
     }
 
     private static void showContracts() {
-        List<Contract> contracts = Contract.getAllContracts();
 
-        for (Contract contract : contracts) {
-            if (contract instanceof PurchaseContract) {
-                System.out.println("Kaufvertrag mit ID " + contract.getContract_no());
-            } else {
-                System.out.println("Mietvertrag mit ID " + contract.getContract_no());
-            }
-        }
+
     }
 
     private static void showContractDetails() {
         int contractId = (FormUtil.readInt("ID des Vertrags"));
-        Contract contract = Contract.load(contractId);
 
-        if (contract == null) {
+
+        if (false) {
             System.out.println("Immobilie mit ID " + contractId + " existiert nicht.");
             return;
         }
 
-        if (contract instanceof PurchaseContract) {
-            System.out.println("Kaufvertrag mit ID " + contract.getContract_no());
-            PurchaseContract purchaseContract = (PurchaseContract) contract;
-            System.out.println("Interestrate: " + purchaseContract.getInterestRate());
-            System.out.println("Anzahl Raten: " + purchaseContract.getNoOfInstallments());
-        } else {
-            System.out.println("Mietvertrag mit ID " + contract.getContract_no());
-            TenancyContract tenancyContract = (TenancyContract) contract;
-            System.out.println("Startdatum: " + tenancyContract.getStartDate());
-            System.out.println("Mietdauer: " + tenancyContract.getDuration());
-            System.out.println("Nebenkosten: " + tenancyContract.getAdditionalCosts());
-
-        }
-        System.out.println("Kunde hat ID " + contract.getPersonID());
-        System.out.println("Datum: " + contract.getDate());
-        System.out.println("Ort: " + contract.getPlace());
-        System.out.println("ID der Immobilie: " + contract.getEstateID());
     }
 }

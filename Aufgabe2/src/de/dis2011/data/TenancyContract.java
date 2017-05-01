@@ -1,14 +1,24 @@
 package de.dis2011.data;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+@Entity
+@Table(name="TENANCYCONTRACT")
+@PrimaryKeyJoinColumn(name="CONTRACT")
 public class TenancyContract extends Contract {
+    @Column(name="STARTDATE")
     private Date startDate;
+    @Column(name="DURATION")
     private int duration;
+    @Column(name="ADDITIONALCOSTS")
     private double additionalCosts;
 
     public Date getStartDate() {
@@ -35,77 +45,7 @@ public class TenancyContract extends Contract {
         this.additionalCosts = additionalCosts;
     }
 
-    public TenancyContract() {
-        super("apartment");
-    }
+    public TenancyContract(){}
 
-    public TenancyContract(int contract_no) {
-        super("apartment", contract_no);
-    }
 
-    @Override
-    protected void saveSpecificFields(boolean createNew) {
-        // Hole Verbindung
-        Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-        try {
-            // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            if (createNew) {
-                String insertSQL = "INSERT INTO TENANCYCONTRACT(STARTDATE, DURATION, ADDITIONALCOSTS, CONTRACT) VALUES (?,?,?,?)";
-
-                PreparedStatement pstmt = con.prepareStatement(insertSQL);
-
-                // Setze Anfrageparameter und fC<hre Anfrage ausp
-                pstmt.setDate(1, new java.sql.Date(startDate.getTime()));
-                pstmt.setInt(2, duration);
-                pstmt.setDouble(3, additionalCosts);
-                pstmt.setInt(4, contract_no);
-                pstmt.executeUpdate();
-
-                pstmt.close();
-            } else {
-                // Falls schon eine ID vorhanden ist, mache ein Update...
-                String updateSQL = "UPDATE TENANCYCONTRACT SET STARTDATE= ?, DURATION= ?, ADDITIONALCOSTS =? WHERE CONTRACT = ?";
-                PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-                // Setze Anfrage Parameter
-                pstmt.setDate(1, new java.sql.Date(startDate.getTime()));
-                pstmt.setInt(2, duration);
-                pstmt.setDouble(3, additionalCosts);
-                pstmt.setInt(4, contract_no);
-                pstmt.executeUpdate();
-
-                pstmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void loadSpecificFields() {
-        try {
-            // Hole Verbindung
-            Connection con = DB2ConnectionManager.getInstance().getConnection();
-
-            // Erzeuge Anfrage
-            String selectSQL = "SELECT * FROM TENANCYCONTRACT WHERE CONTRACT = ?";
-            PreparedStatement pstmt = con.prepareStatement(selectSQL);
-            pstmt.setInt(1, this.getContract_no());
-
-            // Führe Anfrage aus
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                this.setStartDate(rs.getDate("STARTDATE"));
-                this.setDuration(rs.getInt("DURATION"));
-                this.setAdditionalCosts(rs.getDouble("ADDITIONALCOSTS"));
-                rs.close();
-                pstmt.close();
-            }
-            rs.close();
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

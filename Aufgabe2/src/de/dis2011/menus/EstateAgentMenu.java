@@ -1,8 +1,13 @@
 package de.dis2011.menus;
 
+
 import de.dis2011.FormUtil;
 import de.dis2011.Menu;
 import de.dis2011.data.EstateAgent;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
 import java.util.Objects;
 
@@ -57,14 +62,21 @@ public class EstateAgentMenu {
      * die entprechenden Daten eingegeben hat.
      */
     private static void newMakler() {
-        EstateAgent m = new EstateAgent(false);
+
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        EstateAgent m = new EstateAgent();
 
         m.setName(FormUtil.readString("Name"));
         m.setAddress(FormUtil.readString("Adresse"));
         m.setLogin(FormUtil.readString("Login"));
         m.setPassword(FormUtil.readString("Passwort"));
-        m.save();
 
+        session.save(m);
+        tx.commit();
+        session.close();
         System.out.println("Makler mit dem Login " + m.getLogin() + " wurde erzeugt.");
     }
 
@@ -72,19 +84,17 @@ public class EstateAgentMenu {
      * Bearbeitet einen Makler anhand des Logins
      */
     private static void editMakler() {
-        EstateAgent m = new EstateAgent(true);
+        EstateAgent m = new EstateAgent();
 
         m.setLogin(FormUtil.readString("Login"));
         m.setName(FormUtil.readString("Name"));
         m.setAddress(FormUtil.readString("Adresse"));
         m.setPassword(FormUtil.readString("Passwort"));
 
-        if (m.edit()) {
+        if (true) {
             System.out.println("Makler mit dem Login " + m.getLogin() + " wurde bearbeitet.");
         } else {
             //falls makler nicht in der Datenbank, wird ein neuer erstellt
-            m.setInDb(false);
-            m.save();
             System.out.println("Makler mit dem Login " + m.getLogin() + " nicht gefunden, stattdessen neuer erstellt.");
         }
     }
@@ -93,10 +103,9 @@ public class EstateAgentMenu {
      * Löscht einen Makler anhand des Logins
      */
     private static void deleteMakler() {
-        EstateAgent m = new EstateAgent(false);
+        EstateAgent m = new EstateAgent();
 
         m.setLogin(FormUtil.readString("Login"));
-        m.delete();
 
         System.out.println("Makler mit der Login " + m.getLogin() + " wurde gelöscht.");
     }
