@@ -3,14 +3,23 @@ package de.dis2011.menus;
 import de.dis2011.FormUtil;
 import de.dis2011.Menu;
 import de.dis2011.data.*;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+import java.util.List;
 
 public class ContractMenu {
 
-
+    private static SessionFactory sessionFactory;
     /**
      * Zeigt die Vertrags-Werwaltung
      */
     public static void show() {
+        sessionFactory = new Configuration().configure().buildSessionFactory();
+
         //Menüoptionen
         final int NEW_PERSON = 0;
         final int NEW_CONTRACT = 1;
@@ -53,12 +62,35 @@ public class ContractMenu {
      * die entprechenden Daten eingegeben hat.
      */
     private static void createPerson() {
-        Person person = new Person();
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try
+        {
+            tx = session.beginTransaction();
 
-        person.setFirst_name(FormUtil.readString("Vorname"));
-        person.setName(FormUtil.readString("Name"));
-        person.setAdress(FormUtil.readString("Adresse"));
-        System.out.println("Person mit der Id " + person.getId() + " wurde erzeugt.");
+            Person person = new Person();
+            person.setFirst_name(FormUtil.readString("Vorname"));
+            person.setName(FormUtil.readString("Name"));
+            person.setAdress(FormUtil.readString("Adresse"));
+
+            session.save(person);
+            tx.commit();
+
+            System.out.println("Person mit der Id " + person.getId() + " wurde erzeugt.");
+        }
+        catch(HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            System.out.println("Person konnte nicht erzeugt werden: HibernateException");
+        }
+        finally {
+            session.close();
+        }
+
     }
 
     /**
@@ -66,48 +98,122 @@ public class ContractMenu {
      * die entprechenden Daten eingegeben hat.
      */
     private static void createContract() {
-        int estateId = (FormUtil.readInt("Immobilien ID"));
 
-        if (false) {
-            System.out.println("Immobilie mit ID " + estateId + " existiert nicht.");
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+
+        try
+        {
+            tx = session.beginTransaction();
+            int estateId = (FormUtil.readInt("Immobilien ID"));
+            Estate estate = (Estate) session.get(Estate.class, estateId);
+
+            if (estate == null) {
+                System.out.println("Immobilie mit ID " + estateId + " existiert nicht.");
+            }
+            else
+            {
+                int personId = (FormUtil.readInt("Person ID"));
+                Person person = (Person) session.get(Person.class, personId);
+                if(person == null)
+                {
+                    System.out.println("Person mit ID " + personId + " existiert nicht.");
+                }
+                else
+                {
+                    Contract contract = new Contract();
+                    //if is haus
+                    if (estate instanceof House)
+                    {
+                        contract = new PurchaseContract();
+                        PurchaseContract purchaseContract = (PurchaseContract) contract;
+                        purchaseContract.setNoOfInstallments(FormUtil.readInt("Anzahl Raten"));
+                        purchaseContract.setInterestRate(FormUtil.readInt("Interestrate"));
+                    }
+                    else if(estate instanceof Apartment)
+                    {
+                        contract = new TenancyContract();
+                        TenancyContract tenancyContract = (TenancyContract) contract;
+                        tenancyContract.setStartDate(FormUtil.readDate("Startdatum"));
+                        tenancyContract.setDuration(FormUtil.readInt("Dauer in Monaten"));
+                        tenancyContract.setAdditionalCosts(FormUtil.readInt("Nebenkosten"));
+                    }
+                    contract.setDate(FormUtil.readString("Datum"));
+                    contract.setPlace(FormUtil.readString("Ort"));
+                    contract.setPerson(person);
+                    contract.setEstate(estate);
+
+                    session.save(contract);
+                    tx.commit();
+                    System.out.println("Vertrag " + contract.getContract_no() + " wurde erstellt.");
+                }
+            }
+        }
+        catch (HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            System.out.println("Contract konnte nicht erzeugt werden: HibernateException");
 
         }
-
-        int personID = FormUtil.readInt("Person ID");
-
-        Contract contract;
-        //if is haus
-        if (true ) {
-            contract = new PurchaseContract();
-            PurchaseContract purchaseContract = (PurchaseContract) contract;
-            purchaseContract.setNoOfInstallments(FormUtil.readInt("Anzahl Raten"));
-            purchaseContract.setInterestRate(FormUtil.readInt("Interestrate"));
-        } else {
-            contract = new TenancyContract();
-            TenancyContract tenancyContract = (TenancyContract) contract;
-            tenancyContract.setStartDate(FormUtil.readDate("Startdatum"));
-            tenancyContract.setDuration(FormUtil.readInt("Dauer in Monaten"));
-            tenancyContract.setAdditionalCosts(FormUtil.readInt("Nebenkosten"));
+        finally
+        {
+            session.close();
         }
-        contract.setDate(FormUtil.readString("Datum"));
-        contract.setPlace(FormUtil.readString("Ort"));
-
-
     }
 
     private static void showContracts() {
-
-
+        System.out.println("Alle Verträge:");
+        Session session = sessionFactory.openSession();
+        List<Contract> contractList  = (List<Contract>) session.createQuery("from Contract").list();
+        for (Contract contract: contractList)
+        {
+            System.out.println(contract.toString());
+        }
     }
 
     private static void showContractDetails() {
-        int contractId = (FormUtil.readInt("ID des Vertrags"));
 
 
-        if (false) {
-            System.out.println("Immobilie mit ID " + contractId + " existiert nicht.");
-            return;
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+
+        try
+        {
+            tx = session.beginTransaction();
+            int id = (FormUtil.readInt("ID des Vertrags"));
+            Contract contract = (Contract) session.get(PurchaseContract.class,id);
+            if(contract == null)
+            {
+                contract = (Contract) session.get(TenancyContract.class,id);
+            }
+            if(contract == null)
+            {
+                System.out.println("Kein Vertrag mit der ID " + id + " auffindbar.");
+            }
+            else
+            {
+                System.out.println(contract.toString());
+            }
+
+
         }
+        catch (HibernateException e)
+        {
+            if(tx!= null)
+            {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            System.out.println("Contract konnte analysiert werden: HibernateException");
 
+        }
+        finally
+        {
+            session.close();
+        }
     }
 }
