@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,9 +18,9 @@ import java.sql.SQLException;
  */
 @Entity
 @Table(name="APARTMENT")
-@PrimaryKeyJoinColumn(name="ESTATE")
 @OnDelete(action = OnDeleteAction.CASCADE)
-public class Apartment extends Estate {
+@PrimaryKeyJoinColumn(name="ESTATE", referencedColumnName = "ID")
+public class Apartment extends Estate implements Serializable {
     @Column(name="FLOOR")
     private int floor;
     @Column(name="RENT")

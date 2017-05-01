@@ -1,6 +1,7 @@
 package de.dis2011.data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,9 +14,9 @@ import java.util.Objects;
 @Entity
 @Table(name="ESTATE")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Estate {
+public class Estate implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID")
     private int id;
     @Column(name="CITY")
