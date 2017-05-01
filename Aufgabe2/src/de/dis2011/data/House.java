@@ -1,5 +1,10 @@
 package de.dis2011.data;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -11,6 +16,7 @@ import java.sql.SQLException;
 @Entity
 @Table(name="HOUSE")
 @PrimaryKeyJoinColumn(name="ESTATE")
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class House extends Estate {
     @Column(name="FLOOR")
     private int floors;
