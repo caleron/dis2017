@@ -45,6 +45,4 @@ public class House extends Estate {
     public void setGarden(boolean garden) {
         this.garden = garden;
     }
-
-    public House() {}
 }

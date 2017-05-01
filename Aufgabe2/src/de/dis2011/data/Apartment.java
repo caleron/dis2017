@@ -68,6 +68,4 @@ public class Apartment extends Estate implements Serializable {
     public void setBuiltInKitchen(int builtInKitchen) {
         this.builtInKitchen = builtInKitchen;
     }
-
-    public Apartment(){}
 }
