@@ -64,9 +64,8 @@ public class Contract implements Serializable{
         this.person = person;
     }
 
-    @Override
-    public String toString()
+    public String toShortString()
     {
-        return "Vertrag vom " + getDate() + ": " + getPerson().toString() + ", " + getEstate().toString();
+        return "Vertrag " + getContract_no() + " vom " + getDate() + ": " + getPerson().toString() + ", " + getEstate().toString();
     }
 }

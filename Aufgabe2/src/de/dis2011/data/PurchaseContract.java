@@ -38,7 +38,7 @@ public class PurchaseContract extends Contract {
     @Override
     public String toString()
     {
-        return super.toString() + "\nOrt: " + getPlace() + "\nInterestrate: " + getInterestRate() +
+        return toShortString() + "\nOrt: " + getPlace() + "\nInterestrate: " + getInterestRate() +
                 "\nRaten: " + getNoOfInstallments();
     }
 }

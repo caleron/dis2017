@@ -171,7 +171,7 @@ public class ContractMenu {
         List<Contract> contractList  = (List<Contract>) session.createQuery("from Contract").list();
         for (Contract contract: contractList)
         {
-            System.out.println(contract.toString());
+            System.out.println(contract.toShortString());
         }
     }
 

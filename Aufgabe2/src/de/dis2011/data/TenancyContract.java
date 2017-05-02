@@ -52,7 +52,7 @@ public class TenancyContract extends Contract {
     @Override
     public String toString()
     {
-        return super.toString() + "\nOrt: " + getPlace() + "\nStartdatum: " + getStartDate() +
+        return toShortString() + "\nOrt: " + getPlace() + "\nStartdatum: " + getStartDate() +
                 "\nDauer: " + getDuration() + "\nZus. Kosten: " + getAdditionalCosts();
     }
 }
