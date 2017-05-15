@@ -39,3 +39,11 @@ d)  CREATE TABLE MPK
     )
     das selbe wie bei c, beide verbindungen antworten nicht, auch nicht beim commit
 
+4.3
+a)  beide verbindungen antworten nicht
+    1. Verbindung 1 hat einen read lock auf die ganze Tabelle
+    2. Verbindung 2 kann trotzdem eine Zeile lesen, mit read lock
+    3. Verbindung 1 kann Zeile von Verbindung 2 nicht ändern, da diese readlock darauf hat
+    4. das selbe für Verbindung 2
+
+b) alles wie bei a
