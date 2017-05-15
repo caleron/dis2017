@@ -20,4 +20,22 @@ d) set current ISOLATION RS;
     TABLE_LOCK (auf OPK)
     TABLE_LOCK (auf SYSIBM)
 
+4.2
+a)  first connection: select * from VSISP16.OPK where id > 2;
+    second connection: insert into VSISP16.OPK VALUES (4,'hello')
+    hinzugefügt zeile war beim erneuten ausführen sichtbar bei der ersten verbindung
+b)  zweite verbindung ist geblockt beim einfügen
+    erste verbindung ist bei erneuten select auch blockiert
+    TABLE_LOCK auf OPK
+    neuer inhalt ist nach dem commit drin
+c)  erste verbindung: select * from VSISP16.OPK where id = 2;
+    zweite verbindung: UPDATE VSISP16.OPK SET NAME = 'ups' where id = 1
+    beide verbindungen antworten nicht, auch commit nicht möglich
+    ganze tabelle wird gelockt, daher wird das update nicht vor dem commit der ersten verbindung funktionieren
+d)  CREATE TABLE MPK
+    (
+        ID int PRIMARY KEY NOT NULL,
+        NAME varchar(1000)
+    )
+    das selbe wie bei c, beide verbindungen antworten nicht, auch nicht beim commit
 
