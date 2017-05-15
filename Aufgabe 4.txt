@@ -1,0 +1,23 @@
+4.1
+a) cursor stability (is default)
+b) CREATE TABLE OPK
+   (
+       ID int,
+       NAME varchar(1000)
+   )
+c) SELECT * FROM OPK FETCH FIRST 1 ROWS ONLY
+   SELECT * FROM SYSIBMADM.LOCKS_HELD;
+   Locks:
+   INTERNALV_LOCK
+   INTERNALV_LOCK
+   INTERNALP_LOCK
+   TABLE_LOCK (auf SYSIBM)
+d) set current ISOLATION RS;
+    INTERNALV_LOCK
+    ROW_LOCK (auf OPK)
+    INTERNALV_LOCK
+    INTERNALP_LOCK
+    TABLE_LOCK (auf OPK)
+    TABLE_LOCK (auf SYSIBM)
+
+
