@@ -1,49 +1,64 @@
 4.1
 a) cursor stability (is default)
-b) CREATE TABLE OPK
+
+b) create table without primary key:
+
+   CREATE TABLE OPK
    (
        ID int,
        NAME varchar(1000)
    )
+
+   Sampledata:
+
+   INSERT INTO "VSISP16"."OPK" (ID,NAME) VALUES (0,'Max')
+   INSERT INTO "VSISP16"."OPK" (ID,NAME) VALUES (1,'Patrick')
+   INSERT INTO "VSISP16"."OPK" (ID,NAME) VALUES (2,'Simon')
+
 c) SELECT * FROM OPK FETCH FIRST 1 ROWS ONLY
-   SELECT * FROM SYSIBMADM.LOCKS_HELD;
+   SELECT * FROM SYSIBMADM.LOCKS_HELD; (SELECT * FROM SYSIBMADM.LOCKS_HELD WHERE AGENT_ID = '64088‘)
+
    Locks:
-   INTERNALV_LOCK
-   INTERNALV_LOCK
-   INTERNALP_LOCK
-   TABLE_LOCK (auf SYSIBM)
+   INTERNALV_LOCK (SHARE) 
+   INTERNALV_LOCK (SHARE)
+   INTERNALP_LOCK (SHARE)
+   TABLE_LOCK (auf SYSIBM, INTENT SHARE)
+
 d) set current ISOLATION RS;
-    INTERNALV_LOCK
-    ROW_LOCK (auf OPK)
-    INTERNALV_LOCK
-    INTERNALP_LOCK
-    TABLE_LOCK (auf OPK)
-    TABLE_LOCK (auf SYSIBM)
+    INTERNALV_LOCK (SHARE)
+    ROW_LOCK (auf OPK, NEXT KEY SHARE)
+    INTERNALV_LOCK (SHARE)
+    INTERNALP_LOCK (SHARE)
+    TABLE_LOCK (auf OPK, INTENT SHARE)
+    TABLE_LOCK (auf SYSIBM, INTENT SHARE)
 
 4.2
 a)  first connection: select * from VSISP16.OPK where id > 2;
-    second connection: insert into VSISP16.OPK VALUES (4,'hello')
-    hinzugefügt zeile war beim erneuten ausführen sichtbar bei der ersten verbindung
-b)  zweite verbindung ist geblockt beim einfügen
-    erste verbindung ist bei erneuten select auch blockiert
-    TABLE_LOCK auf OPK
-    neuer inhalt ist nach dem commit drin
-c)  erste verbindung: select * from VSISP16.OPK where id = 2;
-    zweite verbindung: UPDATE VSISP16.OPK SET NAME = 'ups' where id = 1
-    beide verbindungen antworten nicht, auch commit nicht möglich
-    ganze tabelle wird gelockt, daher wird das update nicht vor dem commit der ersten verbindung funktionieren
+    second connection: insert into VSISP16.OPK VALUES (4,'hello’);
+    Added line was visible after another select statement
+
+b)  second connection gets blocked and has to wait for the first connect before it can insert/update
+    first connection gets blocked a aswell when you try another query
+    TABLE_LOCK auf OPK (SHARE)
+    second connection data gets committed  after first connection commits
+
+c)  first connection: select * from VSISP16.OPK where id = 2;
+    second connection: UPDATE VSISP16.OPK SET NAME = 'ups' where id = 1
+    both connections won’t answer, no further commit possible
+    the whole table gets locked, therefore the update of the first connection won’t work.
+
 d)  CREATE TABLE MPK
     (
         ID int PRIMARY KEY NOT NULL,
         NAME varchar(1000)
     )
-    das selbe wie bei c, beide verbindungen antworten nicht, auch nicht beim commit
+    same as with c, both connection won’t answer and both won’t do anything on the table without an commit
 
 4.3
-a)  beide verbindungen antworten nicht
-    1. Verbindung 1 hat einen read lock auf die ganze Tabelle
-    2. Verbindung 2 kann trotzdem eine Zeile lesen, mit read lock
-    3. Verbindung 1 kann Zeile von Verbindung 2 nicht ändern, da diese readlock darauf hat
-    4. das selbe für Verbindung 2
+a)  both connections won’t answer
+    1. First connection has a read lock on the whole table
+    2. Second connection can still read one row, with read lock
+    3. First connection can’t change row of connection two, because connection two got a read lock on that
+    4. Same with the second connection
 
-b) alles wie bei a
+b) see a!
