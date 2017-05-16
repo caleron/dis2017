@@ -55,10 +55,5 @@ d)  CREATE TABLE MPK
     same as with c, both connection won’t answer and both won’t do anything on the table without an commit
 
 4.3
-a)  both connections won’t answer
-    1. First connection has a read lock on the whole table
-    2. Second connection can still read one row, with read lock
-    3. First connection can’t change row of connection two, because connection two got a read lock on that
-    4. Same with the second connection
-
-b) see a!
+a)  Connection 1 can change the row that is selected by connection 2, but connection 2 has to wait until connection 1 is committed. Connection 1 has a ROW_LOCK (X = eXclusive) onto its row, connection 2 doesn’t lock the row, therefore connection 1 can still update it.
+b) RS and RR have the same behavior in this case, so this time both connections can’t update the other row until both transactions are fully committed and unlock their rows.
