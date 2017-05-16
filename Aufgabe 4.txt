@@ -55,5 +55,5 @@ d)  CREATE TABLE MPK
     same as with c, both connection won’t answer and both won’t do anything on the table without an commit
 
 4.3
-a)  Connection 1 can change the row that is selected by connection 2, but connection 2 has to wait until connection 1 is committed. Connection 1 has a ROW_LOCK (X = eXclusive) onto its row, connection 2 doesn’t lock the row, therefore connection 1 can still update it.
-b) RS and RR have the same behavior in this case, so this time both connections can’t update the other row until both transactions are fully committed and unlock their rows.
+a)  Connection 1 can change the row that is selected by connection 2, but connection 2 has to wait until connection 1 is committed. Connection 1 has a ROW_LOCK (X = eXclusive) onto its row, connection 2    doesn’t lock the row, therefore connection 1 can still update it.
+b)  RR locks the whole table, therefore other agents can’t do anything furthermore to the table
