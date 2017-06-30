@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
 
 public class Main {
 
@@ -28,7 +29,7 @@ public class Main {
     }
 
     private static void readCsv(References references) throws SQLException, IOException, ParseException {
-        System.out.println("reading csv file");
+        System.out.println("start reading csv file");
         Connection connection = DB2ConnectionManager.getInstance().getConnection();
         PreparedStatement statement = connection.prepareStatement("INSERT INTO VSISP16.TRANSACTIONS (CITY_ID, SHOP_ID, ARTICLE_ID, COUNTRY_ID, PRODUCT_CATEGORY_ID, PRODUCT_FAMILY_ID, PRODUCT_GROUP_ID, DATE, SALES_COUNT, SALES_AMOUNT, REGION_ID) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("sales.csv"), "windows-1252"), ';');
@@ -52,16 +53,18 @@ public class Main {
             statement.addBatch();
             counter++;
             if (counter >= 1000) {
+                Date start = new Date();
                 System.out.print("inserting 1000 rows... ");
                 statement.executeBatch();
-                System.out.println("done");
+                System.out.println("done within " + (new Date().getTime() - start.getTime()) + "ms");
                 counter = 0;
             }
         }
         if (counter > 0) {
+            Date start = new Date();
             System.out.print("inserting remaining " + counter + " rows... ");
             statement.executeBatch();
-            System.out.println("done");
+            System.out.println("done within " + (new Date().getTime() - start.getTime()) + "ms");
         }
         System.out.println("finished!");
     }
