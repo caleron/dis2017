@@ -34,7 +34,7 @@ public class DatabaseInitializer {
                     "    product_category_id INT,\n" +
                     "    product_family_id INT,\n" +
                     "    product_group_id INT,\n" +
-                    "    date TIMESTAMP,\n" +
+                    "    date BIGINT,\n" +
                     "    sales_count INT,\n" +
                     "    sales_amount DECIMAL(16,2),\n" +
                     "    region_id INT,\n" +
