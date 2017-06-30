@@ -38,7 +38,7 @@ public class References {
         Connection connection = DB2ConnectionManager.getInstance().getConnection();
 
         Statement stmt = connection.createStatement();
-
+        System.out.print("loading reference data...");
         //load countries
         ResultSet resultSet = stmt.executeQuery("SELECT * FROM DB2INST1.LANDID");
         while (resultSet.next()) {
@@ -125,6 +125,7 @@ public class References {
             articles.put(article.id, article);
         }
         resultSet.close();
+        System.out.println("done");
     }
 
     public static class Article {

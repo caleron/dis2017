@@ -8,14 +8,18 @@ public class DatabaseInitializer {
     public static void init() {
         Connection connection = DB2ConnectionManager.getInstance().getConnection();
 
-        Statement statement = null;
+        Statement statement;
         try {
             statement = connection.createStatement();
             //drop all tables
+            System.out.print("Dropping tables... ");
             dropTables(statement, new String[]{"TRANSACTIONS", "ARTICLES", "COUNTRIES",
                     "PRODUCTCATEGORIES", "PRODUCTFAMILIES", "PRODUCTGROUPS", "REGIONS",
                     "SHOPS", "CITIES"});
 
+            System.out.println("done");
+
+            System.out.print("Creating tables... ");
             statement.execute("CREATE TABLE SHOPS (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL)");
             statement.execute("CREATE TABLE ARTICLES (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL, PRICE DOUBLE NOT NULL )");
             statement.execute("CREATE TABLE COUNTRIES (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL)");
@@ -48,6 +52,7 @@ public class DatabaseInitializer {
                     "    CONSTRAINT transactions_COUNTRIES_ID_fk FOREIGN KEY (country_id) REFERENCES COUNTRIES (ID) ON DELETE CASCADE" +
                     ")");
 
+            System.out.println("done");
         } catch (SQLException e) {
             e.printStackTrace();
         }

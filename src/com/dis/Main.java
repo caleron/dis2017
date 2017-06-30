@@ -18,9 +18,9 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-//            DatabaseInitializer.init();
+            DatabaseInitializer.init();
             References references = References.getInstance();
-//            insertReferences(references);
+            insertReferences(references);
             readCsv(references);
         } catch (Exception e) {
             e.printStackTrace();
@@ -28,13 +28,14 @@ public class Main {
     }
 
     private static void readCsv(References references) throws SQLException, IOException, ParseException {
-
+        System.out.println("reading csv file");
         Connection connection = DB2ConnectionManager.getInstance().getConnection();
         PreparedStatement statement = connection.prepareStatement("INSERT INTO VSISP16.TRANSACTIONS (CITY_ID, SHOP_ID, ARTICLE_ID, COUNTRY_ID, PRODUCT_CATEGORY_ID, PRODUCT_FAMILY_ID, PRODUCT_GROUP_ID, DATE, SALES_COUNT, SALES_AMOUNT, REGION_ID) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("sales.csv"), "windows-1252"), ';');
         String[] nextLine;
         //skip the first line
         reader.readNext();
+        int counter = 0;
         while ((nextLine = reader.readNext()) != null) {
             Transaction transaction = new Transaction(nextLine, references);
             statement.setInt(1, transaction.cityId);
@@ -49,9 +50,20 @@ public class Main {
             statement.setBigDecimal(10, transaction.salesAmount);
             statement.setInt(11, transaction.regionId);
             statement.addBatch();
+            counter++;
+            if (counter >= 1000) {
+                System.out.print("inserting 1000 rows... ");
+                statement.executeBatch();
+                System.out.println("done");
+                counter = 0;
+            }
         }
-        statement.executeBatch();
-
+        if (counter > 0) {
+            System.out.print("inserting remaining " + counter + " rows... ");
+            statement.executeBatch();
+            System.out.println("done");
+        }
+        System.out.println("finished!");
     }
 
     /**
@@ -63,6 +75,7 @@ public class Main {
     private static void insertReferences(References references) throws SQLException {
         Connection connection = DB2ConnectionManager.getInstance().getConnection();
 
+        System.out.print("inserting reference data...");
         //insert articles
         PreparedStatement statement = connection.prepareStatement("INSERT INTO VSISP16.ARTICLES VALUES (?,?,?)");
         for (References.Article article : references.articles.values()) {
@@ -136,5 +149,6 @@ public class Main {
             statement.addBatch();
         }
         statement.executeBatch();
+        System.out.println("done");
     }
 }

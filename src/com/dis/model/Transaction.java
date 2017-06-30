@@ -27,8 +27,12 @@ public class Transaction {
             }
         }
 
-        if (shop == null || article == null) {
-            System.out.println("SHIT");
+        if (article == null) {
+            System.out.println("did not found article " + csvLine[2]);
+            return;
+        }
+        if (shop == null) {
+            System.out.println("did not found shop " + csvLine[1]);
             return;
         }
 
