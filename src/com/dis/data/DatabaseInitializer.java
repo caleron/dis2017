@@ -6,11 +6,13 @@ import java.sql.Statement;
 
 public class DatabaseInitializer {
     public static void init() {
-        Connection connection = DB2ConnectionManager.getInstance().getConnection();
+        Connection connection = DerbyConnectionManager.getInstance().getConnection();
 
         Statement statement;
         try {
             statement = connection.createStatement();
+            statement.execute("SET SCHEMA DIS");
+
             //drop all tables
             System.out.print("Dropping tables... ");
             dropTables(statement, new String[]{"TRANSACTIONS", "ARTICLES", "COUNTRIES",
@@ -28,9 +30,9 @@ public class DatabaseInitializer {
             statement.execute("CREATE TABLE PRODUCTGROUPS (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL)");
             statement.execute("CREATE TABLE REGIONS (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL)");
             statement.execute("CREATE TABLE CITIES (ID INT PRIMARY KEY NOT NULL, NAME VARCHAR(255) NOT NULL)");
-            statement.execute("CREATE TABLE VSISP16.transactions\n" +
+            statement.execute("CREATE TABLE TRANSACTIONS\n" +
                     "(\n" +
-                    "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),\n" +
+                    "    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),\n" +
                     "    city_id INT,\n" +
                     "    shop_id INT,\n" +
                     "    article_id INT,\n" +

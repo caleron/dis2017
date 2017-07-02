@@ -1,7 +1,7 @@
 package com.dis;
 
-import com.dis.data.DB2ConnectionManager;
 import com.dis.data.DatabaseInitializer;
+import com.dis.data.DerbyConnectionManager;
 import com.dis.model.References;
 import com.dis.model.Transaction;
 import com.opencsv.CSVReader;
@@ -30,8 +30,8 @@ public class Main {
 
     private static void readCsv(References references) throws SQLException, IOException, ParseException {
         System.out.println("start reading csv file");
-        Connection connection = DB2ConnectionManager.getInstance().getConnection();
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO VSISP16.TRANSACTIONS (CITY_ID, SHOP_ID, ARTICLE_ID, COUNTRY_ID, PRODUCT_CATEGORY_ID, PRODUCT_FAMILY_ID, PRODUCT_GROUP_ID, DATE, SALES_COUNT, SALES_AMOUNT, REGION_ID) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        Connection connection = DerbyConnectionManager.getInstance().getConnection();
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO TRANSACTIONS (CITY_ID, SHOP_ID, ARTICLE_ID, COUNTRY_ID, PRODUCT_CATEGORY_ID, PRODUCT_FAMILY_ID, PRODUCT_GROUP_ID, DATE, SALES_COUNT, SALES_AMOUNT, REGION_ID) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream("sales.csv"), "windows-1252"), ';');
         String[] nextLine;
         //skip the first line
@@ -39,6 +39,9 @@ public class Main {
         int counter = 0;
         while ((nextLine = reader.readNext()) != null) {
             Transaction transaction = new Transaction(nextLine, references);
+            if (transaction.invalid) {
+                continue;
+            }
             statement.setInt(1, transaction.cityId);
             statement.setInt(2, transaction.shopId);
             statement.setInt(3, transaction.articleId);
@@ -52,9 +55,9 @@ public class Main {
             statement.setInt(11, transaction.regionId);
             statement.addBatch();
             counter++;
-            if (counter >= 1000) {
+            if (counter >= 10000) {
                 Date start = new Date();
-                System.out.print("inserting 1000 rows... ");
+                System.out.print("inserting 10000 rows... ");
                 statement.executeBatch();
                 System.out.println("done within " + (new Date().getTime() - start.getTime()) + "ms");
                 counter = 0;
@@ -76,11 +79,11 @@ public class Main {
      * @param references
      */
     private static void insertReferences(References references) throws SQLException {
-        Connection connection = DB2ConnectionManager.getInstance().getConnection();
+        Connection connection = DerbyConnectionManager.getInstance().getConnection();
 
         System.out.print("inserting reference data...");
         //insert articles
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO VSISP16.ARTICLES VALUES (?,?,?)");
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO ARTICLES VALUES (?,?,?)");
         for (References.Article article : references.articles.values()) {
             statement.setInt(1, article.id);
             statement.setString(2, article.name);
@@ -90,7 +93,7 @@ public class Main {
         statement.executeBatch();
 
         //insert product categories
-        statement = connection.prepareStatement("INSERT INTO VSISP16.PRODUCTCATEGORIES VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO PRODUCTCATEGORIES VALUES (?,?)");
         for (References.ProductCategory category : references.productCategories.values()) {
             statement.setInt(1, category.id);
             statement.setString(2, category.name);
@@ -99,7 +102,7 @@ public class Main {
         statement.executeBatch();
 
         //insert product families
-        statement = connection.prepareStatement("INSERT INTO VSISP16.PRODUCTFAMILIES VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO PRODUCTFAMILIES VALUES (?,?)");
         for (References.ProductFamily family : references.productFamilies.values()) {
             statement.setInt(1, family.id);
             statement.setString(2, family.name);
@@ -108,7 +111,7 @@ public class Main {
         statement.executeBatch();
 
         //insert product groups
-        statement = connection.prepareStatement("INSERT INTO VSISP16.PRODUCTGROUPS VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO PRODUCTGROUPS VALUES (?,?)");
         for (References.ProductGroup productGroup : references.productGroups.values()) {
             statement.setInt(1, productGroup.id);
             statement.setString(2, productGroup.name);
@@ -118,7 +121,7 @@ public class Main {
 
 
         //insert countries
-        statement = connection.prepareStatement("INSERT INTO VSISP16.COUNTRIES VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO COUNTRIES VALUES (?,?)");
         for (References.Country country : references.countries.values()) {
             statement.setInt(1, country.id);
             statement.setString(2, country.name);
@@ -127,7 +130,7 @@ public class Main {
         statement.executeBatch();
 
         //insert regions
-        statement = connection.prepareStatement("INSERT INTO VSISP16.REGIONS VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO REGIONS VALUES (?,?)");
         for (References.Region region : references.regions.values()) {
             statement.setInt(1, region.id);
             statement.setString(2, region.name);
@@ -136,7 +139,7 @@ public class Main {
         statement.executeBatch();
 
         //insert cities
-        statement = connection.prepareStatement("INSERT INTO VSISP16.CITIES VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO CITIES VALUES (?,?)");
         for (References.City city : references.cities.values()) {
             statement.setInt(1, city.id);
             statement.setString(2, city.name);
@@ -145,7 +148,7 @@ public class Main {
         statement.executeBatch();
 
         //insert shops
-        statement = connection.prepareStatement("INSERT INTO VSISP16.SHOPS VALUES (?,?)");
+        statement = connection.prepareStatement("INSERT INTO SHOPS VALUES (?,?)");
         for (References.Shop shop : references.shops.values()) {
             statement.setInt(1, shop.id);
             statement.setString(2, shop.name);

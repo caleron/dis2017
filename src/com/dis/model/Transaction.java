@@ -46,7 +46,10 @@ public class Transaction {
         productGroupId = article.productGroup.id;
         salesCount = Integer.parseInt(csvLine[3]);
         salesAmount = new BigDecimal(csvLine[4].replace(",", "."));
+        invalid = false;
     }
+
+    public boolean invalid = true;
 
     public int cityId;
     public int shopId;
