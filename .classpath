@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-1.9.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/db2jcc_license_cu.jar"/>
+	<classpathentry kind="lib" path="lib/db2jcc.jar"/>
+	<classpathentry kind="lib" path="lib/derby-10.13.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/opencsv-3.9.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
