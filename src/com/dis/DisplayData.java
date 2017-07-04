@@ -6,15 +6,15 @@ import java.util.*;
  * Created by Kasimir on 04.07.2017.
  */
 public class DisplayData {
-    public List<CityData> allData;
+    public List<LocationData> allData;
 
     public DisplayData(){
-        allData = new ArrayList<CityData>();
+        allData = new ArrayList<LocationData>();
     }
 
     public void add(String city, Date date, String article, int amount) {
         boolean cityavailable = false;
-        for (CityData cd: allData)
+        for (LocationData cd: allData)
         {
             if(cd.cityName.equals(city))
             {
@@ -25,7 +25,7 @@ public class DisplayData {
         }
         if(!cityavailable && city != null)
         {
-            CityData newData = new CityData(city);
+            LocationData newData = new LocationData(city);
             newData.add(date,article,amount);
             allData.add(newData);
         }
@@ -35,7 +35,7 @@ public class DisplayData {
     {
         List<List<String>> result = new ArrayList<List<String>>();
 
-        for(CityData cd: allData)
+        for(LocationData cd: allData)
         {
             List<List<String>> cityresults = cd.makeOutput(headers);
             result.addAll(cityresults);
