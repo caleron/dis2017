@@ -56,7 +56,7 @@ public class Managertool {
 							"JOIN CITIES ON TRANSACTIONS.CITY_ID=CITIES.ID " +
 							"JOIN ARTICLES ON TRANSACTIONS.ARTICLE_ID=ARTICLES.ID " +
 							"GROUP BY ROLLUP(CITIES.Name, TRANSACTIONS.DATE, ARTICLES.NAME)";
-                    outputData(query);
+                    outputData(query, "ARTICLES");
                     break;
 				case MENU_SECONDARYOUTPUT:
 					query = "SELECT  REGIONS.NAME, TRANSACTIONS.DATE, PRODUCTGROUPS.NAME, SUM(SALES_COUNT) " +
@@ -64,7 +64,7 @@ public class Managertool {
 							"JOIN REGIONS ON TRANSACTIONS.REGION_ID=REGIONS.ID " +
 							"JOIN PRODUCTGROUPS ON TRANSACTIONS.PRODUCT_GROUP_ID=PRODUCTGROUPS.ID " +
 							"GROUP BY ROLLUP(REGIONS.Name, TRANSACTIONS.DATE, PRODUCTGROUPS.NAME)";
-					outputData(query);
+					outputData(query, "PRODUCTGROUPS");
 					break;
 				case MENU_TERTIARYOUTPUT:
 					query = "SELECT  COUNTRIES.NAME, TRANSACTIONS.DATE, PRODUCTFAMILIES.NAME, SUM(SALES_COUNT) " +
@@ -72,7 +72,7 @@ public class Managertool {
 							"JOIN COUNTRIES ON TRANSACTIONS.COUNTRY_ID=COUNTRIES.ID " +
 							"JOIN PRODUCTFAMILIES ON TRANSACTIONS.PRODUCT_FAMILY_ID=PRODUCTFAMILIES.ID " +
 							"GROUP BY ROLLUP(COUNTRIES.Name, TRANSACTIONS.DATE, PRODUCTFAMILIES.NAME)";
-					outputData(query);
+					outputData(query,"PRODUCTFAMILIES");
 					break;
 				case MENU_QUADROUPILARYOUTPUT:
 					query = "SELECT  SHOPS.NAME, TRANSACTIONS.DATE, PRODUCTCATEGORIES.NAME, SUM(SALES_COUNT) " +
@@ -80,7 +80,7 @@ public class Managertool {
 							"JOIN SHOPS ON TRANSACTIONS.SHOP_ID=SHOPS.ID " +
 							"JOIN PRODUCTCATEGORIES ON TRANSACTIONS.PRODUCT_CATEGORY_ID=PRODUCTCATEGORIES.ID " +
 							"GROUP BY ROLLUP(SHOPS.Name, TRANSACTIONS.DATE, PRODUCTCATEGORIES.NAME)";
-					outputData(query);
+					outputData(query, "PRODUCTCATEGORIES");
 					break;
 				case QUIT:
 					return;
@@ -107,11 +107,11 @@ public class Managertool {
         System.out.println(b.invalidate().build().getPreview());
 	}
 
-	public static void outputData(String querystring) {
+	public static void outputData(String querystring, String headertype) {
 		try {
 			Connection connection = DerbyConnectionManager.getInstance().getConnection();
 
-			PreparedStatement statement0 = connection.prepareStatement("SELECT NAME FROM ARTICLES");
+			PreparedStatement statement0 = connection.prepareStatement("SELECT NAME FROM " + headertype);
 			ResultSet rs = statement0.executeQuery();
             List<String> t1Headers = new ArrayList<String>();
             t1Headers.add("Ort");
