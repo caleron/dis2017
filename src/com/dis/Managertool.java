@@ -74,19 +74,40 @@ public class Managertool {
 	public static void mainoutput() {
 		try {
 			Connection connection = DerbyConnectionManager.getInstance().getConnection();
+
+			PreparedStatement statement0 = connection.prepareStatement("SELECT NAME FROM ARTICLES");
+			ResultSet rs = statement0.executeQuery();
+            List<String> t1Headers = new ArrayList<String>();
+            t1Headers.add("Stadt");
+            t1Headers.add("Datum");
+			while(rs.next())
+            {
+                t1Headers.add(rs.getString("NAME"));
+            }
+            t1Headers.add("total");
+
 			PreparedStatement statement = connection.prepareStatement("SELECT  CITIES.NAME, TRANSACTIONS.DATE, ARTICLES.NAME, SUM(SALES_COUNT) " +
                     "FROM TRANSACTIONS " +
                     "JOIN CITIES ON TRANSACTIONS.CITY_ID=CITIES.ID " +
                     "JOIN ARTICLES ON TRANSACTIONS.ARTICLE_ID=ARTICLES.ID " +
                     "GROUP BY ROLLUP(CITIES.Name, TRANSACTIONS.DATE, ARTICLES.NAME)");
             ResultSet result = statement.executeQuery();
+            DisplayData displayData = new DisplayData();
             while(result.next()) {
                 String city = result.getString(1);
-                String date = new Date(result.getLong(2)).toString();
+                Date date = new Date(result.getLong(2));
                 String article = result.getString(3);
                 int amount = result.getInt(4);
-                System.out.println("" + city + "; " + date + "; " + article + ";" + amount);
+
+                displayData.add(city,date,article,amount);
+
             }
+            List<List<String>> t1Rows = displayData.makeOutput(t1Headers);
+
+            Board b = new Board(800);
+            b.setInitialBlock(new Block(b, 798, 2, "Standard Ausgabe").allowGrid(false).setBlockAlign(Block.BLOCK_CENTRE).setDataAlign(Block.DATA_CENTER));
+            b.appendTableTo(0, Board.APPEND_BELOW, new Table(b, 800, t1Headers, t1Rows));
+            System.out.println(b.invalidate().build().getPreview());
 		}
 		catch(Exception e)	{
 			System.out.println("QUERY FAILED");
