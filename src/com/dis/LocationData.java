@@ -10,6 +10,7 @@ import java.util.List;
 public class LocationData {
     public String cityName;
     public List<DayValues> tagesDaten;
+    public List<String> total;
 
     public LocationData(String name)
     {
@@ -55,6 +56,10 @@ public class LocationData {
         q4.add(cityName);
         q4.add("Q4");
 
+        total = new ArrayList<String>();
+        total.add(cityName);
+        total.add("total");
+
         for(DayValues dv: tagesDaten)
         {
             List<String> dvlist = dv.makeOutput(headers);
@@ -79,6 +84,9 @@ public class LocationData {
         //Die sind leer.
         //result.add(q3);
         //result.add(q4);
+
+        result.add(total);
+
         return result;
     }
 
@@ -87,16 +95,21 @@ public class LocationData {
         for(int i = 0; i < toadd.size(); i++)
         {
             int newvalue = Integer.parseInt(toadd.get(i));
-            int oldvalue = 0;
             try {
-                 oldvalue = Integer.parseInt(result.get(i + 2));
+                 int oldvalue = Integer.parseInt(result.get(i + 2));
                  result.set(i+2,Integer.toString(oldvalue+newvalue));
             }
             catch (IndexOutOfBoundsException e)
             {
                 result.add(Integer.toString(newvalue));
             }
-
+            try {
+                total.set(i+2,Integer.toString(Integer.parseInt(total.get(i + 2))+newvalue));
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                total.add(Integer.toString(newvalue));
+            }
         }
     }
 }
