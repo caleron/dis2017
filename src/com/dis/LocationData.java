@@ -7,11 +7,11 @@ import java.util.List;
 /**
  * Created by Kasimir on 04.07.2017.
  */
-public class CityData {
+public class LocationData {
     public String cityName;
     public List<DayValues> tagesDaten;
 
-    public CityData(String name)
+    public LocationData(String name)
     {
         this.cityName = name;
         tagesDaten = new ArrayList<DayValues>();
