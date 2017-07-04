@@ -40,6 +40,26 @@ public class DisplayData {
             List<List<String>> cityresults = cd.makeOutput(headers);
             result.addAll(cityresults);
         }
+        List<String> total = new ArrayList<>();
+        total.add("Insgesamt");
+        total.add("total");
+        for (List<String> list: result) {
+            if(list.get(1).equals("total"))
+            {
+                for(int i = 2; i < list.size(); i++)
+                {
+                    if(total.size() < list.size())
+                    {
+                        total.add("0");
+                    }
+                    int oldvalue = Integer.parseInt(total.get(i));
+                    int newvalue = Integer.parseInt(list.get(i));
+                    total.set(i,Integer.toString(oldvalue+newvalue));
+                    total.set(i,Integer.toString(oldvalue+newvalue));
+                }
+            }
+        }
+        result.add(total);
         return result;
     }
 
