@@ -26,26 +26,62 @@ public class Managertool {
 		// Menüoptionen
 		final int MENU_TESTOUTPUT = 0;
 		final int MENU_MAINOUTPUT = 1;
-		final int QUIT = 2;
+		final int MENU_SECONDARYOUTPUT = 2;
+		final int MENU_TERTIARYOUTPUT = 3;
+		final int MENU_QUADROUPILARYOUTPUT = 4;
+		final int QUIT = 5;
 
 
 		// Erzeuge Menü
 		Menu mainMenu = new Menu("Hauptmenü");
 		mainMenu.addEntry("Testoutput", MENU_TESTOUTPUT);
 		mainMenu.addEntry("Main Output", MENU_MAINOUTPUT);
+		mainMenu.addEntry("Secondary Output", MENU_SECONDARYOUTPUT);
+		mainMenu.addEntry("Tertiary Output", MENU_TERTIARYOUTPUT);
+		mainMenu.addEntry("Quadroupilary Output", MENU_QUADROUPILARYOUTPUT);
 		mainMenu.addEntry("Beenden", QUIT);
 
 		
 		while(true) {
 			int response = mainMenu.show();
-			
+			String query = "";
+
 			switch(response) {
 				case MENU_TESTOUTPUT:
 					testoutput();
 					break;
                 case MENU_MAINOUTPUT:
-                    mainoutput();
+                	query = "SELECT  CITIES.NAME, TRANSACTIONS.DATE, ARTICLES.NAME, SUM(SALES_COUNT) " +
+							"FROM TRANSACTIONS " +
+							"JOIN CITIES ON TRANSACTIONS.CITY_ID=CITIES.ID " +
+							"JOIN ARTICLES ON TRANSACTIONS.ARTICLE_ID=ARTICLES.ID " +
+							"GROUP BY ROLLUP(CITIES.Name, TRANSACTIONS.DATE, ARTICLES.NAME)";
+                    outputData(query);
                     break;
+				case MENU_SECONDARYOUTPUT:
+					query = "SELECT  REGIONS.NAME, TRANSACTIONS.DATE, PRODUCTGROUPS.NAME, SUM(SALES_COUNT) " +
+							"FROM TRANSACTIONS " +
+							"JOIN REGIONS ON TRANSACTIONS.REGION_ID=REGIONS.ID " +
+							"JOIN PRODUCTGROUPS ON TRANSACTIONS.PRODUCT_GROUP_ID=PRODUCTGROUPS.ID " +
+							"GROUP BY ROLLUP(REGIONS.Name, TRANSACTIONS.DATE, PRODUCTGROUPS.NAME)";
+					outputData(query);
+					break;
+				case MENU_TERTIARYOUTPUT:
+					query = "SELECT  COUNTRIES.NAME, TRANSACTIONS.DATE, PRODUCTFAMILIES.NAME, SUM(SALES_COUNT) " +
+							"FROM TRANSACTIONS " +
+							"JOIN COUNTRIES ON TRANSACTIONS.COUNTRY_ID=COUNTRIES.ID " +
+							"JOIN PRODUCTFAMILIES ON TRANSACTIONS.PRODUCT_FAMILY_ID=PRODUCTFAMILIES.ID " +
+							"GROUP BY ROLLUP(COUNTRIES.Name, TRANSACTIONS.DATE, PRODUCTFAMILIES.NAME)";
+					outputData(query);
+					break;
+				case MENU_QUADROUPILARYOUTPUT:
+					query = "SELECT  SHOPS.NAME, TRANSACTIONS.DATE, PRODUCTCATEGORIES.NAME, SUM(SALES_COUNT) " +
+							"FROM TRANSACTIONS " +
+							"JOIN SHOPS ON TRANSACTIONS.SHOP_ID=SHOPS.ID " +
+							"JOIN PRODUCTCATEGORIES ON TRANSACTIONS.PRODUCT_CATEGORY_ID=PRODUCTCATEGORIES.ID " +
+							"GROUP BY ROLLUP(SHOPS.Name, TRANSACTIONS.DATE, PRODUCTCATEGORIES.NAME)";
+					outputData(query);
+					break;
 				case QUIT:
 					return;
 
@@ -71,14 +107,14 @@ public class Managertool {
         System.out.println(b.invalidate().build().getPreview());
 	}
 
-	public static void mainoutput() {
+	public static void outputData(String querystring) {
 		try {
 			Connection connection = DerbyConnectionManager.getInstance().getConnection();
 
 			PreparedStatement statement0 = connection.prepareStatement("SELECT NAME FROM ARTICLES");
 			ResultSet rs = statement0.executeQuery();
             List<String> t1Headers = new ArrayList<String>();
-            t1Headers.add("Stadt");
+            t1Headers.add("Ort");
             t1Headers.add("Datum");
 			while(rs.next())
             {
@@ -86,11 +122,8 @@ public class Managertool {
             }
             t1Headers.add("total");
 
-			PreparedStatement statement = connection.prepareStatement("SELECT  CITIES.NAME, TRANSACTIONS.DATE, ARTICLES.NAME, SUM(SALES_COUNT) " +
-                    "FROM TRANSACTIONS " +
-                    "JOIN CITIES ON TRANSACTIONS.CITY_ID=CITIES.ID " +
-                    "JOIN ARTICLES ON TRANSACTIONS.ARTICLE_ID=ARTICLES.ID " +
-                    "GROUP BY ROLLUP(CITIES.Name, TRANSACTIONS.DATE, ARTICLES.NAME)");
+			PreparedStatement statement = connection.prepareStatement(querystring);
+
             ResultSet result = statement.executeQuery();
             DisplayData displayData = new DisplayData();
             while(result.next()) {
